@@ -6,7 +6,7 @@ function createGeometries() {
     One Rectangular prism
     */
     const pole = new CylinderGeometry(0.08, 0.08, 1, 16);
-    const box = new BoxGeometry(2.5, 1.5, 0.25);
+    const box = new BoxGeometry(1.75, 2.5, 0.25);
 
 
     return {

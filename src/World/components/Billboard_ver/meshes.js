@@ -12,17 +12,17 @@ function createMeshes() {
         geometries.pole,
         materials.poleMaterial
     );
-    pole1.position.set(-1, 0.5, 0);
+    pole1.position.set(-0.5, 0.5, 0);
       
     const pole2 = new Mesh(
         geometries.pole,
         materials.poleMaterial
     );
-    pole2.position.set(1, 0.5, 0);
+    pole2.position.set(0.5, 0.5, 0);
     
     // Create box mesh
     const box = new Mesh(geometries.box, materials.boxMaterial);
-    box.position.set(0, 1.75, 0);
+    box.position.set(0, 2.25, 0);
 
     return {
         box,

@@ -20,6 +20,7 @@ import { Loop } from './systems/Loop.js'
 
 // Module-scoped variables so we can't access them outside module
 let camera;
+let controls;
 let renderer;
 let scene;
 let loop;
@@ -32,20 +33,20 @@ class World {
         renderer = createRenderer();
         loop = new Loop(camera, scene, renderer);
         container.append(renderer.domElement);
+        controls = createControls(camera, renderer.domElement);
 
-        const controls = createControls(camera, renderer.domElement);
         const {ambientLight, mainLight } = createLights();
         const billboardHor = new Billboard_hor();
-        //const billboardVer = new Billboard_ver();
+        const billboardVer = new Billboard_ver();
         //const cube = createCube();
-        const meshGroup = createMeshGroup();
+        //const meshGroup = createMeshGroup();
         //cube.visible = false;
-        loop.updatables.push(meshGroup, controls);
-
+        //loop.updatables.push(meshGroup, controls);
+        billboardHor.position.set(-5, 0, 1);
         //scene.add(cube, ambientLight, mainLight, meshGroup);
 
-        //loop.updatables.push(controls, billboard);
-        scene.add(ambientLight, mainLight, billboardHor);
+        loop.updatables.push(controls);
+        scene.add(ambientLight, mainLight, billboardHor, billboardVer);
 
         const resizer = new Resizer(container, camera, renderer);
 
@@ -60,6 +61,8 @@ class World {
     async init() {
         // Load models
         const { apple } = await loadCharacter();
+        apple.position.set(0, 1, 0);
+        controls.target.copy(apple.position);
         //scene.add(apple);
     }
 
