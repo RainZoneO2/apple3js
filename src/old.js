@@ -1,7 +1,7 @@
-import * as THREE from '../node_modules/three/build/three.module.js';
-import { TrackballControls } from '../node_modules/three/examples/jsm/controls/TrackballControls.js';
-import { GLTFLoader } from '../node_modules/three/examples/jsm/loaders/GLTFLoader.js';
-import Stats from '../node_modules/three/examples/jsm/libs/stats.module'
+import * as THREE from 'three/build/three.module.js';
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import Stats from 'three/examples/jsm/libs/stats.module.js'
 
 
 //A new scene to place things into
