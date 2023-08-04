@@ -36,7 +36,7 @@ function createMeshGroup() {
         // Add each clone sphere to group
         group.add(sphere);
     }
-    //group.scale.multiplyScalar(2)
+    group.scale.multiplyScalar(2)
 
     const radiansPerSecond = MathUtils.degToRad(30);
     let i = 0;
@@ -44,10 +44,6 @@ function createMeshGroup() {
     group.tick = (delta) => { 
         // Rotate whole group on z axis
         group.rotation.z -= delta * radiansPerSecond;
-
-        //group.scale.multiplyScalar(i % 10);
-        i++;
-        console.log(i % 10);
     };
 
     return group;

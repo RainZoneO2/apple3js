@@ -8,7 +8,9 @@ import { createCube } from "./components/cube";
 import { createMeshGroup } from "./components/meshGroup";
 import { createLights } from "./components/lights";
 import { createScene } from './components/scene.js';
-import { Billboard } from "./components/Billboard/Billboard";
+import { Billboard_hor } from "./components/Billboard_hor/Billboard_hor.js";
+import { Billboard_ver } from "./components/Billboard_ver/Billboard_ver.js";
+import { loadCharacter } from "./components/Character/character";
 
 // Systems
 import { createControls } from "./systems/controls";
@@ -33,15 +35,17 @@ class World {
 
         const controls = createControls(camera, renderer.domElement);
         const {ambientLight, mainLight } = createLights();
-        const billboard = new Billboard();
+        const billboardHor = new Billboard_hor();
+        //const billboardVer = new Billboard_ver();
         //const cube = createCube();
-        //const meshGroup = createMeshGroup();
+        const meshGroup = createMeshGroup();
         //cube.visible = false;
-        //loop.updatables.push(meshGroup, controls);
+        loop.updatables.push(meshGroup, controls);
+
         //scene.add(cube, ambientLight, mainLight, meshGroup);
 
-        loop.updatables(controls, billboard);
-        scene.add(ambientLight, mainLight, billboard);
+        //loop.updatables.push(controls, billboard);
+        scene.add(ambientLight, mainLight, billboardHor);
 
         const resizer = new Resizer(container, camera, renderer);
 
@@ -51,6 +55,12 @@ class World {
         // controls.addEventListener('change', () => {
         //     this.render();
         // });
+    }
+
+    async init() {
+        // Load models
+        const { apple } = await loadCharacter();
+        //scene.add(apple);
     }
 
     render() {

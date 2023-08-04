@@ -1,11 +1,18 @@
 import { World } from "./World/World";
 
-function main() {
+async function main() {
     const container = document.querySelector('#scene-container');
+    
+    // Synchronous
     const world = new World(container);
+
+    // Asynchronous
+    await world.init();
 
     //world.render();
     world.start();
 }
 
-main();
+main().catch((err) => {
+    console.error(err);
+});

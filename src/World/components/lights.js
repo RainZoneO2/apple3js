@@ -9,11 +9,11 @@ function createLights() {
     const ambientLight = new HemisphereLight(
         'white', // bright sky color
         'darkslategrey', // dim ground color
-        5, // intensity
+        2, // intensity
       );
 
     // Creates a directional light
-    const mainLight = new DirectionalLight('white', 8);
+    const mainLight = new DirectionalLight('white', 5);
 
     // Moves the light up, right, and towards camera
     mainLight.position.set(0, 0, 10);
