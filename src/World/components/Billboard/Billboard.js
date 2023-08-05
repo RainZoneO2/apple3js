@@ -1,14 +1,12 @@
 import { Group } from 'three';
 
-import { createGeometries } from './geometries';
-import { createMaterials } from './materials';
 import { createMeshes } from './meshes';
 
-class Billboard_hor extends Group {
-    constructor() {
+class Billboard extends Group {
+    constructor(type) {
         super();
 
-        this.meshes = createMeshes();
+        this.meshes = createMeshes(type);
 
         this.add(
             this.meshes.box,
@@ -18,4 +16,4 @@ class Billboard_hor extends Group {
     }
 }
 
-export { Billboard_hor }
+export { Billboard }
