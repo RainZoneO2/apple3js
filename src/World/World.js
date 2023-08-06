@@ -10,6 +10,7 @@ import { createLights } from "./components/lights";
 import { createScene } from './components/scene.js';
 import { Billboard } from "./components/Billboard/Billboard.js";
 import { loadCharacter } from "./components/Character/character";
+import { loadModel } from "./components/Billboard/model";
 
 // Systems
 import { createControls } from "./systems/controls";
@@ -38,7 +39,7 @@ class World {
         controls = createControls(camera, renderer.domElement);
 
         const {ambientLight, mainLight } = createLights();
-        const billboardHor = new Billboard('horizontal');
+        const billboardHor = new Billboard('horizontal', '/alma.png');
 
         billboardHor.position.set(0, 0, 0);
 
@@ -60,6 +61,9 @@ class World {
         const { apple } = await loadCharacter();
         apple.position.set(0, 1, 0);
         controls.target.copy(apple.position);
+
+        const { billboard } = await loadModel();
+        scene.add(billboard);
         //scene.add(apple);
     }
 

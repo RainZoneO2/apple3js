@@ -10,7 +10,7 @@ function createControls(camera, canvas) {
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
-    controls.minDistance = 5;
+    controls.minDistance = 2;
     controls.maxDistance = 20;
 
 

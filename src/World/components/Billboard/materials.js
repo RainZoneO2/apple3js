@@ -1,6 +1,8 @@
-import { MeshStandardMaterial } from "three";
+import { MeshBasicMaterial, MeshStandardMaterial, TextureLoader } from "three";
+import { createTexture } from "./texture";
 
-function createMaterials() {
+
+function createMaterials(imagePath) {
     const boxMaterial = new MeshStandardMaterial({
         color: 'blue',
         flatShading: true,
@@ -11,9 +13,14 @@ function createMaterials() {
         flatShading: true,
     });
 
+    const imageMaterial = new MeshBasicMaterial({
+        map: createTexture(imagePath),
+    });
+
     return {
         boxMaterial,
         poleMaterial,
+        imageMaterial,
     };
 }
 

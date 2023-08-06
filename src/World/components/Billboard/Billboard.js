@@ -3,10 +3,10 @@ import { Group } from 'three';
 import { createMeshes } from './meshes';
 
 class Billboard extends Group {
-    constructor(type) {
+    constructor(type, imagePath) {
         super();
 
-        this.meshes = createMeshes(type);
+        this.meshes = createMeshes(type, imagePath);
 
         this.add(
             this.meshes.box,
