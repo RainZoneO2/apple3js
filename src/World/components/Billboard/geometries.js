@@ -12,7 +12,7 @@ function createGeometries(type) {
                       : null;
     
     const box = new BoxGeometry(boxDimensions.width, boxDimensions.height, boxDimensions.depth);
-
+    
     return {
         pole,
         box,

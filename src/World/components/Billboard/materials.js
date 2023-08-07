@@ -2,9 +2,9 @@ import { MeshBasicMaterial, MeshStandardMaterial, TextureLoader } from "three";
 import { createTexture } from "./texture";
 
 
-function createMaterials(imagePath) {
+function createMaterials(imagePath, aspectRatio) {
     const boxMaterial = new MeshStandardMaterial({
-        color: 'blue',
+        color: 'SteelBlue',
         flatShading: true,
       });
 
@@ -14,7 +14,7 @@ function createMaterials(imagePath) {
     });
 
     const imageMaterial = new MeshBasicMaterial({
-        map: createTexture(imagePath),
+        map: createTexture(imagePath, aspectRatio),
     });
 
     return {

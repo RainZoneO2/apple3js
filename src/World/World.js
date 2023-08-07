@@ -39,15 +39,17 @@ class World {
         controls = createControls(camera, renderer.domElement);
 
         const {ambientLight, mainLight } = createLights();
-        const billboardHor = new Billboard('horizontal', '/alma.png');
+        const billboardHor = new Billboard('horizontal', '/cringe.jpg');
+        const billboardver = new Billboard('vertical', '/cring.jpg');
 
-        billboardHor.position.set(0, 0, 0);
-
+        billboardHor.position.set(-1.2, 0, 0);
+        billboardver.position.set(1.2, 0, 0);
+        //billboardHor.visible = false;
         loop.updatables.push(controls, stats);
         
         const resizer = new Resizer(container, camera, renderer);
         
-        scene.add(ambientLight, mainLight, billboardHor);
+        scene.add(ambientLight, mainLight, billboardHor, billboardver);
         scene.add(createAxesHelper(), createGridHelper());
         
         // Render on demand
@@ -63,7 +65,9 @@ class World {
         controls.target.copy(apple.position);
 
         const { billboard } = await loadModel();
-        scene.add(billboard);
+        billboard.rotation.set(0, 3, 0);
+        //scene.add(billboard);
+        
         //scene.add(apple);
     }
 

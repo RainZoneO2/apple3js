@@ -5,7 +5,7 @@ import { createMaterials } from './materials';
 
 function createMeshes(type, imagePath) {
     const geometries = createGeometries(type);
-    const materials = createMaterials(imagePath);
+    const materials = createMaterials(imagePath, geometries.box.parameters.width / geometries.box.parameters.height);
 
     // Create pole meshes
     const pole1 = new Mesh(
@@ -20,8 +20,15 @@ function createMeshes(type, imagePath) {
     
     // Create box mesh
     const box = new Mesh(geometries.box, materials.boxMaterial);
-    
 
+    box.material = [
+        materials.boxMaterial, 
+        materials.boxMaterial, 
+        materials.boxMaterial, 
+        materials.boxMaterial, 
+        materials.imageMaterial, 
+        materials.boxMaterial
+    ]
     // Check type
     if (type === 'vertical') {
         pole1.position.set(-0.5, 0.5, 0);
