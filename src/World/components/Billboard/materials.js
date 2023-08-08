@@ -1,8 +1,9 @@
-import { MeshBasicMaterial, MeshStandardMaterial, TextureLoader } from "three";
-import { createTexture } from "./texture";
+import { MeshBasicMaterial, MeshStandardMaterial, NoToneMapping, TextureLoader } from "three";
+import { createImageTexture, createVideoTexture } from "./texture";
+import { isImageOrVideo } from "../../systems/imgVidCheck";
 
 
-function createMaterials(imagePath, aspectRatio) {
+function createMaterials(path, aspectRatio) {
     const boxMaterial = new MeshStandardMaterial({
         color: 'SteelBlue',
         flatShading: true,
@@ -13,8 +14,15 @@ function createMaterials(imagePath, aspectRatio) {
         flatShading: true,
     });
 
+    const type = isImageOrVideo(path);
+    console.log(type);
+
     const imageMaterial = new MeshBasicMaterial({
-        map: createTexture(imagePath, aspectRatio),
+        map: type === 'image' ? createImageTexture(path, aspectRatio)
+            : type === 'video' ? createVideoTexture(path, aspectRatio)
+            : null,
+        
+        toneMapped: false,
     });
 
     return {

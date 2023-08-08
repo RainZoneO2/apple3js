@@ -3,9 +3,9 @@ import { Mesh } from 'three';
 import { createGeometries } from './geometries';
 import { createMaterials } from './materials';
 
-function createMeshes(type, imagePath) {
+function createMeshes(type, path) {
     const geometries = createGeometries(type);
-    const materials = createMaterials(imagePath, geometries.box.parameters.width / geometries.box.parameters.height);
+    const materials = createMaterials(path, geometries.box.parameters.width / geometries.box.parameters.height);
 
     // Create pole meshes
     const pole1 = new Mesh(
@@ -29,6 +29,9 @@ function createMeshes(type, imagePath) {
         materials.imageMaterial, 
         materials.boxMaterial
     ]
+    pole1.receiveShadow = true;
+    pole2.receiveShadow = true;
+    box.receiveShadow = true;
     // Check type
     if (type === 'vertical') {
         pole1.position.set(-0.5, 0.5, 0);

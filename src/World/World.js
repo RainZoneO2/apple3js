@@ -18,6 +18,8 @@ import { createRenderer } from './systems/renderer.js';
 import { Resizer } from './systems/Resizer.js';
 import { Loop } from './systems/Loop.js'
 import { createStats } from "./systems/stats";
+import { CameraHelper } from "three";
+import anime from "animejs";
 
 // Module-scoped variables so we can't access them outside module
 let camera;
@@ -28,18 +30,23 @@ let loop;
 let stats;
 
 class World {
-    constructor(container) {
+    constructor(sunContainer, moonContainer) {
         camera = createCamera();
         scene = createScene();
         renderer = createRenderer();
         loop = new Loop(camera, scene, renderer);
         stats = createStats();
-        container.append(renderer.domElement);
-        container.append(stats.domElement);
+
+        document.body.appendChild(renderer.domElement);
+        document.body.appendChild(stats.domElement);
+
+        //sunContainer.append(renderer.domElement);
+        //sunContainer.append(stats.domElement);
+
         controls = createControls(camera, renderer.domElement);
 
-        const {ambientLight, mainLight } = createLights();
-        const billboardHor = new Billboard('horizontal', '/cringe.jpg');
+        const {ambientLight, sunLight, moonLight } = createLights();
+        const billboardHor = new Billboard('horizontal', '/rain.webm');
         const billboardver = new Billboard('vertical', '/cring.jpg');
 
         billboardHor.position.set(-1.2, 0, 0);
@@ -47,11 +54,54 @@ class World {
         //billboardHor.visible = false;
         loop.updatables.push(controls, stats);
         
-        const resizer = new Resizer(container, camera, renderer);
+        let daytime = true;
+        let animating = false;
+        window.addEventListener("keypress", (e) => {
+            if (e.key != 'j') return;
+            
+            if (animating) return;
+
+            let anim;
+            if (!daytime) {
+                anim = [1, 0];
+            } else if (daytime) {
+                anim = [0, 1];
+            } else {
+                return;
+            }
+
+            animating = true;
+
+            let obj = {t: 0} ;
+            anime({
+                targets: obj,
+                t: anim,
+                complete: () => {
+                    animating = false;
+                    daytime = !daytime;
+                },
+                update: () => {
+                    sunLight.intensity = 3.5 * ( 1 - obj.t);
+                    moonLight.intensity = 3.5 * obj.t;
+
+                    sunLight.position.setY(20 * (1 - obj.t));
+                    moonLight.position.setY(20 * obj.t);
+
+                    sunContainer.style.opacity = 1 - obj.t;
+                    moonContainer.style.opacity = obj.t;
+                },
+                easing: 'easeInOutSine',
+                duration: 500,
+            });
+        });
+
+        const resizer = new Resizer(sunContainer, camera, renderer);
         
-        scene.add(ambientLight, mainLight, billboardHor, billboardver);
+        scene.add(ambientLight, sunLight, billboardHor, billboardver);
         scene.add(createAxesHelper(), createGridHelper());
         
+        //const helper = new CameraHelper( moonLight.shadow.helper );
+        //scene.add(helper);
         // Render on demand
         // controls.addEventListener('change', () => {
         //     this.render();
@@ -63,10 +113,6 @@ class World {
         const { apple } = await loadCharacter();
         apple.position.set(0, 1, 0);
         controls.target.copy(apple.position);
-
-        const { billboard } = await loadModel();
-        billboard.rotation.set(0, 3, 0);
-        //scene.add(billboard);
         
         //scene.add(apple);
     }

@@ -1,10 +1,11 @@
 import { World } from "./World/World";
 
 async function main() {
-    const container = document.querySelector('#scene-container');
+    const sunContainer = document.querySelector('.sun-background');
+    const moonContainer = document.querySelector('.moon-background');
     
     // Synchronous
-    const world = new World(container);
+    const world = new World(sunContainer, moonContainer);
 
     // Asynchronous
     await world.init();
