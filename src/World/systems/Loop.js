@@ -14,7 +14,7 @@ class Loop {
         this.renderer.setAnimationLoop(() => {
             // Tick forward one frame
             this.tick();
-
+            
             // Render a frame
             this.renderer.render(this.scene, this.camera);
         });

@@ -19,7 +19,12 @@ import { Resizer } from './systems/Resizer.js';
 import { Loop } from './systems/Loop.js'
 import { createStats } from "./systems/stats";
 import { CameraHelper } from "three";
+
+
+// Libraries
 import anime from "animejs";
+
+import { PhyWorld } from "./PhyWorld";
 
 // Module-scoped variables so we can't access them outside module
 let camera;
@@ -29,6 +34,8 @@ let scene;
 let loop;
 let stats;
 
+let phyWorld;
+
 class World {
     constructor(sunContainer, moonContainer) {
         camera = createCamera();
@@ -37,6 +44,8 @@ class World {
         loop = new Loop(camera, scene, renderer);
         stats = createStats();
 
+        phyWorld = new PhyWorld(scene);
+        phyWorld.test();
         document.body.appendChild(renderer.domElement);
         document.body.appendChild(stats.domElement);
 
@@ -52,7 +61,7 @@ class World {
         billboardHor.position.set(-1.2, 0, 0);
         billboardver.position.set(1.2, 0, 0);
         //billboardHor.visible = false;
-        loop.updatables.push(controls, stats);
+        loop.updatables.push(controls, stats, phyWorld);
         
         let daytime = true;
         let animating = false;
@@ -97,9 +106,12 @@ class World {
 
         const resizer = new Resizer(sunContainer, camera, renderer);
         
-        scene.add(ambientLight, sunLight, billboardHor, billboardver);
-        scene.add(createAxesHelper(), createGridHelper());
+        scene.add(ambientLight, sunLight);
+        //scene.add(billboardHor, billboardver);
+        //scene.add(createAxesHelper(), createGridHelper());
         
+
+
         //const helper = new CameraHelper( moonLight.shadow.helper );
         //scene.add(helper);
         // Render on demand
@@ -113,11 +125,12 @@ class World {
         const { apple } = await loadCharacter();
         apple.position.set(0, 1, 0);
         controls.target.copy(apple.position);
-        
+
         //scene.add(apple);
     }
 
     render() {
+        phyWorld.tick();
         renderer.render(scene, camera);
     }
 
