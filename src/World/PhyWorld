@@ -11,10 +11,10 @@ class PhyWorld {
     }
 
     tick() {
-        this.world.step(1/60);
+        //this.world.step(1/60);
         //console.log(this.sphereBody.position);
-        //this.world.fixedStep();
-        this.cannonDebugger.update();
+        this.world.fixedStep();
+        //this.cannonDebugger.update();
     }
 
     addBody(obj) {

@@ -107,8 +107,8 @@ class World {
         const resizer = new Resizer(sunContainer, camera, renderer);
         
         scene.add(ambientLight, sunLight);
-        //scene.add(billboardHor, billboardver);
-        //scene.add(createAxesHelper(), createGridHelper());
+        scene.add(billboardHor, billboardver);
+        scene.add(createAxesHelper(), createGridHelper());
         
 
 
