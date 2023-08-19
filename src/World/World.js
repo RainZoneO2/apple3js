@@ -18,11 +18,12 @@ import { createRenderer } from './systems/renderer.js';
 import { Resizer } from './systems/Resizer.js';
 import { Loop } from './systems/Loop.js'
 import { createStats } from "./systems/stats";
-import { CameraHelper } from "three";
+import { CameraHelper, SphereGeometry } from "three";
 
 
 // Libraries
 import anime from "animejs";
+import { threeToCannon } from "three-to-cannon";
 
 import { PhyWorld } from "./PhyWorld";
 
@@ -61,6 +62,8 @@ class World {
         billboardHor.position.set(-1.2, 0, 0);
         billboardver.position.set(1.2, 0, 0);
         //billboardHor.visible = false;
+
+        
         loop.updatables.push(controls, stats, phyWorld);
         
         let daytime = true;
@@ -107,7 +110,7 @@ class World {
         const resizer = new Resizer(sunContainer, camera, renderer);
         
         scene.add(ambientLight, sunLight);
-        scene.add(billboardHor, billboardver);
+        //scene.add(billboardHor, billboardver);
         scene.add(createAxesHelper(), createGridHelper());
         
 

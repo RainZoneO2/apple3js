@@ -6,14 +6,13 @@
   "devDependencies": {
     "vite": "^4.4.9"
   },
-
-
   "dependencies": {
     "anime": "^0.1.2",
     "animejs": "^3.2.1",
     "cannon-es": "^0.20.0",
     "cannon-es-debugger": "^1.0.0",
     "three": "^0.155.0",
+    "three-to-cannon": "^4.3.0",
     "vite": "^4.4.9"
   }
 }
