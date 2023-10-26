@@ -20,6 +20,7 @@ import { Loop } from './systems/Loop.js'
 import { createStats } from "./systems/stats";
 import { CameraHelper } from "three";
 import anime from "animejs";
+import { Cannon } from "./systems/cannon";
 
 // Module-scoped variables so we can't access them outside module
 let camera;
@@ -28,6 +29,7 @@ let renderer;
 let scene;
 let loop;
 let stats;
+let cannon;
 
 class World {
     constructor(sunContainer, moonContainer) {
@@ -36,12 +38,10 @@ class World {
         renderer = createRenderer();
         loop = new Loop(camera, scene, renderer);
         stats = createStats();
+        cannon = new Cannon();
 
         document.body.appendChild(renderer.domElement);
         document.body.appendChild(stats.domElement);
-
-        //sunContainer.append(renderer.domElement);
-        //sunContainer.append(stats.domElement);
 
         controls = createControls(camera, renderer.domElement);
 
@@ -54,6 +54,7 @@ class World {
         //billboardHor.visible = false;
         loop.updatables.push(controls, stats);
         
+
         let daytime = true;
         let animating = false;
         window.addEventListener("keypress", (e) => {
@@ -113,7 +114,8 @@ class World {
         const { apple } = await loadCharacter();
         apple.position.set(0, 1, 0);
         controls.target.copy(apple.position);
-        
+
+        cannon.bodies.push(apple);
         //scene.add(apple);
     }
 
