@@ -12,10 +12,11 @@ async function loadCharacter() {
     console.log("Apple:", appleData);
 
     const apple = setupModel(appleData);
-
+    
     return { 
         apple
     }
 }
+
 
 export { loadCharacter };

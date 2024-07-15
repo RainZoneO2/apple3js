@@ -1,0 +1,51 @@
+import { World, Vec3, Body, Plane, Sphere } from 'cannon-es';
+import CannonDebugger from 'cannon-es-debugger';
+
+class PhyWorld {
+    constructor(scene) {
+        this.world = new World({
+            gravity: new Vec3(0, -9.81, 0)
+        });
+        this.scene = scene;
+
+    }
+
+    tick() {
+        //this.world.step(1/60);
+        //console.log(this.sphereBody.position);
+        this.world.fixedStep();
+        //this.cannonDebugger.update();
+    }
+
+    addBody(obj) {
+        this.world.addBody(obj);
+    }
+
+    debug() {
+        this.cannonDebugger = new CannonDebugger(this.scene, this.world, {
+            color: 0xff0000,
+        });
+        
+    }
+
+    test() {
+        const groundBody = new Body({
+            type: Body.STATIC,
+            shape: new Plane(),
+        });
+
+        groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
+        this.world.addBody(groundBody);
+
+        
+        this.sphereBody = new Body({
+            mass: 5,
+            shape: new Sphere(1),
+        });
+        
+        this.sphereBody.position.set(0, 7, 0);
+        this.world.addBody(this.sphereBody);
+    }
+}
+
+export { PhyWorld };

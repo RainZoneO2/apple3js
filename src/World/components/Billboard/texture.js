@@ -15,7 +15,7 @@ function createVideoTexture(videoPath, aspectRatio) {
     video.src = '/rain.webm';
     video.load();
     video.preload = 'auto';
-    video.autoload = true;
+    //video.autoload = true;
     video.loop = true;
     video.playsInline = true;
     
@@ -26,7 +26,7 @@ function createVideoTexture(videoPath, aspectRatio) {
     //texture.magFilter = LinearFilter;
     //texture.colorSpace = SRGBColorSpace;
     
-    video.play();
+    //video.play();
 
     return texture;
 }

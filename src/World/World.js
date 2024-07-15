@@ -19,6 +19,9 @@ import { Resizer } from './systems/Resizer.js';
 import { Loop } from './systems/Loop.js'
 import { createStats } from "./systems/stats";
 import { CameraHelper } from "three";
+
+
+// Libraries
 import anime from "animejs";
 import { Cannon } from "./systems/cannon";
 
@@ -29,6 +32,8 @@ let renderer;
 let scene;
 let loop;
 let stats;
+
+let phyWorld;
 let cannon;
 
 class World {
@@ -40,6 +45,8 @@ class World {
         stats = createStats();
         cannon = new Cannon();
 
+        phyWorld = new PhyWorld(scene);
+        phyWorld.test();
         document.body.appendChild(renderer.domElement);
         document.body.appendChild(stats.domElement);
 
@@ -52,7 +59,7 @@ class World {
         billboardHor.position.set(-1.2, 0, 0);
         billboardver.position.set(1.2, 0, 0);
         //billboardHor.visible = false;
-        loop.updatables.push(controls, stats);
+        loop.updatables.push(controls, stats, phyWorld);
         
 
         let daytime = true;
@@ -98,9 +105,12 @@ class World {
 
         const resizer = new Resizer(sunContainer, camera, renderer);
         
-        scene.add(ambientLight, sunLight, billboardHor, billboardver);
+        scene.add(ambientLight, sunLight);
+        scene.add(billboardHor, billboardver);
         scene.add(createAxesHelper(), createGridHelper());
         
+
+
         //const helper = new CameraHelper( moonLight.shadow.helper );
         //scene.add(helper);
         // Render on demand
@@ -116,10 +126,12 @@ class World {
         controls.target.copy(apple.position);
 
         cannon.bodies.push(apple);
+
         //scene.add(apple);
     }
 
     render() {
+        phyWorld.tick();
         renderer.render(scene, camera);
     }
 

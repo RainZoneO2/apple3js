@@ -1,2 +1,2 @@
 # apple3js
-An immersive web experience for my girlfriends birthday.
+An immersive web experience for my girlfriend.
