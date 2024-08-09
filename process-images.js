@@ -6,6 +6,9 @@ const path = require('path')
 const inputDir = path.join(__dirname, 'static/memories/textures/to-process')
 const outputDir = path.join(__dirname, 'static/memories/textures')
 
+// Flag passed to script
+const conversionType = process.argv[2]
+
 function formatFileSize(bytes) {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
     if (bytes === 0) return '0 Byte'
@@ -15,6 +18,12 @@ function formatFileSize(bytes) {
 
 // Converts and crops, resizes images
 async function processImages() {
+
+    // Check that flag passed to script is valid
+    if (conversionType !== 'avif' && conversionType !== 'webp') {
+        return 'ERROR: Please enter \'avif\' or \'webp\'' 
+    }
+
     // Read files in input directory
     const files = await fs.readdir(inputDir)
 
@@ -30,19 +39,47 @@ async function processImages() {
             const originalStats = await fs.stat(filePath)
             const originalFileSize = originalStats.size
 
-            // Convert to AVIF and resize to 1000x1000
-            const avifOutputPath = path.join(`${outputDir}/avif`, `${fileName}.avif`)
-            await sharp(filePath)
-                .resize(1000, 1000, { fit: 'contain' })
-                .avif({ quality: 80 })
-                .toFile(avifOutputPath)
-                .catch(err => console.error(`Error converting ${file} to AVIF:`, err))
+            // Load the image to get dimensions
+            const image = sharp(filePath)
+            const metadata = await image.metadata()
 
-            // Get AVIF file size
-            const avifStats = await fs.stat(avifOutputPath)
-            const avifFileSize = avifStats.size
+            // Determine whether to crop or resize
+            let transform = image
 
-            console.log(`${file} to AVIF | ${formatFileSize(originalFileSize)} => ${formatFileSize(avifFileSize)} (Reduced by ${(100 - (avifFileSize / originalFileSize * 100)).toFixed(2)}%)`)
+            if (metadata.width > 1000 && metadata.height > 1000 && metadata.width !== metadata.height) {
+                const cropOptions = {
+                    left: Math.floor((metadata.width - 1000) / 2),
+                    top: Math.floor((metadata.height - 1000) / 2),
+                    width: 1000,
+                    height: 1000,
+                }
+                transform = transform.extract(cropOptions)
+            } else {
+                // Resize image to fit within 1000x1000
+                transform = transform.resize(1000, 1000, { fit: 'cover' })
+            }
+
+
+            let outputPath = ''
+
+            // Set properties based on flag passed
+            if (conversionType === 'avif') {
+                outputPath = path.join(`${outputDir}/avif`, `${fileName}.avif`)
+                transform = transform.avif({ quality: 80 })
+            } else {
+                outputPath = path.join(`${outputDir}/webp`, `${fileName}.webp`)
+                transform = transform.webp({ quality: 80 })
+            }
+
+            await transform
+                .toFile(outputPath)
+                .catch(err => console.error(`Error converting ${file}:`, err))
+
+            // Get file size
+            const fileStats = await fs.stat(outputPath)
+            const fileSize = fileStats.size
+
+            console.log(`Converted ${file} | ${formatFileSize(originalFileSize)} => ${formatFileSize(fileSize)} (Reduced by ${(100 - (fileSize / originalFileSize * 100)).toFixed(2)}%)`)
         }
     }
 }

@@ -3,7 +3,7 @@
   "private": "true",
   "version": "0.0.1",
   "scripts": {
-    "process-images": "node process-images.js",
+    "process-images": "node process-images.js webp",
     "generate-manifest": "node generate-manifest.js",
     "predev": "npm run process-images && npm run generate-manifest",
     "dev": "vite",
