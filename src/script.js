@@ -281,6 +281,7 @@ const planeGeometry = new THREE.PlaneGeometry(2,2)
 // Mesh array for referencing in tick()
 const planeMeshes = []
 
+
 const generateMemoryPanels = () => {
     memoryTextures.forEach(texture => {
         // Material

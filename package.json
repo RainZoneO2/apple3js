@@ -3,9 +3,11 @@
   "private": "true",
   "version": "0.0.1",
   "scripts": {
-    "dev": "npm run generate-manifest && vite",
-    "build": "vite build",
-    "generate-manifest": "node generate-manifest.js"
+    "process-images": "node process-images.js",
+    "generate-manifest": "node generate-manifest.js",
+    "predev": "npm run process-images && npm run generate-manifest",
+    "dev": "vite",
+    "build": "vite build"
   },
   "dependencies": {
     "cannon-es": "^0.20.0",
@@ -14,6 +16,7 @@
   },
   "devDependencies": {
     "cannon-es-debugger": "^1.0.0",
+    "sharp": "^0.33.4",
     "vite": "^5.4.0",
     "vite-plugin-restart": "^0.4.1"
   }
