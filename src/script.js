@@ -16,6 +16,8 @@ debugObject.reset = () => {
 }
 gui.add(debugObject, 'reset')
 
+debugObject.physicsDebugger = false
+gui.add(debugObject, 'physicsDebugger')
 
 /**
  * Base
@@ -37,8 +39,8 @@ const audioSource = new THREE.Audio( audioListener )
 audioLoader.load('sounds/the_love_cycle.mp3', function(buffer) {
     audioSource.setBuffer(buffer)
     audioSource.setLoop(true)
-    audioSource.setVolume(0.5)
-    audioSource.play()
+    audioSource.setVolume(0)
+    // audioSource.play()
 })
 
 /**
@@ -72,6 +74,8 @@ groundDisplacementTexture.wrapT = THREE.RepeatWrapping
 
 
 // Memories - Images
+const memoryAlphaTexture = textureLoader.load('memories/alpha.webp')
+
 const memoryTextures = []
 
 const memoryFolderPath = 'memories/textures/avif/'
@@ -236,7 +240,16 @@ fontLoader.load(
     }
 )
 
-const cannonDebugger = new CannonDebugger(scene, world)
+const cannonDebugger = new CannonDebugger(scene, world, {
+    onUpdate(body, mesh) {
+        if (debugObject.physicsDebugger)
+            mesh.visible = true
+            // gui.add(mesh, 'visible').name(`Body ${body.id}`)
+        else if (!debugObject.physicsDebugger) {
+            mesh.visible = false
+        }
+    }
+})
 
 /**
  * Floor
@@ -274,7 +287,7 @@ const generateMemoryPanels = () => {
         const planeMaterial = new THREE.MeshBasicMaterial({
             map: texture,
             transparent: true,
-            opacity: 0.7
+            alphaMap: memoryAlphaTexture
         })
 
         // Mesh
@@ -345,7 +358,6 @@ scene.add(camera)
 // Add audioListener to camera
 camera.add( audioListener )
 
-
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
@@ -386,8 +398,9 @@ const tick = () => {
   })
 
   // Update cannon debugger
-  // cannonDebugger.update()
-
+//   if (debugObject.physicsDebugger) {
+// }
+  cannonDebugger.update()
 
   // Update controls
   controls.update()
