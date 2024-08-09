@@ -71,12 +71,56 @@ groundNormalTexture.wrapT = THREE.RepeatWrapping
 groundDisplacementTexture.wrapT = THREE.RepeatWrapping
 
 
+// Memories - Images
+const memoryTextures = []
+
+const memoryFolderPath = 'memories/textures/avif/'
+const manifestUrl = '/manifest.json'
+
+fetch(manifestUrl)
+    .then(response => response.json())
+    .then(imageFiles => {
+        const filteredImages = imageFiles.filter(file => file.startsWith(memoryFolderPath))
+        console.log(filteredImages)
+        let loadedTextures = 0
+
+        filteredImages.forEach(file => {
+            const imageUrl = `${file}`
+            
+            textureLoader.load(imageUrl, texture => {
+                memoryTextures.push(texture)
+                loadedTextures++
+                
+                console.log('Loaded texture:', imageUrl)
+            
+                // Check if all textures have been loaded
+                if (loadedTextures === filteredImages.length) {
+                    memoryTextures.forEach(texture => {
+                        texture.colorSpace = THREE.SRGBColorSpace;
+                        texture.generateMipmaps = false
+                        console.log('Color space set to SRGB for texture & Mipmaps turned off');
+                    });
+                    console.log('All textures loaded:', memoryTextures.length);
+                
+                    generateMemoryPanels()
+                }
+            })
+        })
+
+        if (filteredImages.length === 0) {
+            console.log(`No images found in target folder: ${memoryFolderPath}`)
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching manifest or images:', error)
+    })
 
 
 /**
  * Utils
  */
 const objectsToUpdate = []
+
 
 /**
  * Physics
@@ -169,7 +213,7 @@ fontLoader.load(
                 mass: 1
             })
             body.addShape(shape)
-            body.position.set(letterMesh.position.x, letterHeight / 2, 0)
+            body.position.set(letterMesh.position.x, letterHeight / 2 + 0.015, 0)
             world.addBody(body)
             
             objectsToUpdate.push({
@@ -200,7 +244,7 @@ const cannonDebugger = new CannonDebugger(scene, world)
 const floor = new THREE.Mesh(
   new THREE.PlaneGeometry(100, 100, 1000, 1000),
   new THREE.MeshStandardMaterial({
-    // color: "#23423b",
+    color: "#324c8c",
     map: groundColorTexture,
     aoMap: groundARMTexture,
     roughnessMap: groundARMTexture,
@@ -213,6 +257,38 @@ const floor = new THREE.Mesh(
 floor.receiveShadow = true
 floor.rotation.x = -Math.PI * 0.5
 scene.add(floor)
+
+/**
+ * Memories - Images
+ */
+
+// Geometry
+const planeGeometry = new THREE.PlaneGeometry(2,2)
+
+// Mesh array for referencing in tick()
+const planeMeshes = []
+
+const generateMemoryPanels = () => {
+    memoryTextures.forEach(texture => {
+        // Material
+        const planeMaterial = new THREE.MeshBasicMaterial({
+            map: texture,
+            transparent: true,
+            opacity: 0.7
+        })
+
+        // Mesh
+        const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial)
+        
+        planeMesh.position.x = (Math.random() - 0.5) * 10
+        planeMesh.position.y = 1
+        planeMesh.position.z = (Math.random() - 0.5) * 10
+
+        scene.add(planeMesh)
+
+        planeMeshes.push(planeMesh)
+    })
+}
 
 /**
  * Lights
@@ -269,6 +345,7 @@ scene.add(camera)
 // Add audioListener to camera
 camera.add( audioListener )
 
+
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
@@ -295,6 +372,11 @@ const tick = () => {
   const deltaTime = elapsedTime - oldElapsedTime
   oldElapsedTime = elapsedTime
 
+  // Update memory planes
+  planeMeshes.forEach(planeMesh => {
+    planeMesh.lookAt(camera.position)
+  })
+ 
   // Update physics world
   world.step(1/60, deltaTime, 3)
 
@@ -304,7 +386,8 @@ const tick = () => {
   })
 
   // Update cannon debugger
-//   cannonDebugger.update()
+  // cannonDebugger.update()
+
 
   // Update controls
   controls.update()
