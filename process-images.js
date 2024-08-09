@@ -6,6 +6,20 @@ const path = require('path')
 const inputDir = path.join(__dirname, 'static/memories/textures/to-process')
 const outputDir = path.join(__dirname, 'static/memories/textures')
 
+// Directory to move processed files to
+const processedDir = path.join(__dirname, 'static/memories/textures/processed')
+
+// Make sure processed directory exists
+async function ensureDir(dir) {
+    try {
+        await fs.mkdir(dir, { recursive: true })
+    } catch (err) {
+        if (err.code !== 'EEXIST') {
+            throw err
+        }
+    }
+}
+
 // Flag passed to script
 const conversionType = process.argv[2]
 
@@ -18,6 +32,8 @@ function formatFileSize(bytes) {
 
 // Converts and crops, resizes images
 async function processImages() {
+
+    await ensureDir(processedDir)
 
     // Check that flag passed to script is valid
     if (conversionType !== 'avif' && conversionType !== 'webp') {
@@ -80,6 +96,13 @@ async function processImages() {
             const fileSize = fileStats.size
 
             console.log(`Converted ${file} | ${formatFileSize(originalFileSize)} => ${formatFileSize(fileSize)} (Reduced by ${(100 - (fileSize / originalFileSize * 100)).toFixed(2)}%)`)
+        
+            // Move original file to processedDir
+            const processedFilePath = path.join(processedDir, file)
+            await fs.rename(filePath, processedFilePath)
+                .catch(err => console.error(`Error moving ${file}:`, err))
+
+            console.log(`Moved original ${file} to procesed directory.`)
         }
     }
 }

@@ -78,7 +78,7 @@ const memoryAlphaTexture = textureLoader.load('memories/alpha.webp')
 
 const memoryTextures = []
 
-const memoryFolderPath = 'memories/textures/avif/'
+const memoryFolderPath = 'memories/textures/webp/'
 const manifestUrl = '/manifest.json'
 
 fetch(manifestUrl)
