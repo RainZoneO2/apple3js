@@ -44,14 +44,39 @@ audioLoader.load('sounds/the_love_cycle.mp3', function(buffer) {
 /**
  * Textures
  */
-// const textureLoader = new THREE.TextureLoader()
+ const textureLoader = new THREE.TextureLoader()
 // const cubeTextureLoader = new THREE.CubeTextureLoader()
+
+// Ground
+const groundColorTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_diff_1k.avif')
+const groundARMTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_arm_1k.avif')
+const groundNormalTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_nor_gl_1k.avif')
+const groundDisplacementTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_disp_1k.avif')
+
+groundColorTexture.colorSpace = THREE.SRGBColorSpace
+
+groundColorTexture.repeat.set(48, 48)
+groundARMTexture.repeat.set(48, 48)
+groundNormalTexture.repeat.set(48, 48)
+groundDisplacementTexture.repeat.set(48, 48)
+
+groundColorTexture.wrapS = THREE.RepeatWrapping
+groundARMTexture.wrapS = THREE.RepeatWrapping
+groundNormalTexture.wrapS = THREE.RepeatWrapping
+groundDisplacementTexture.wrapS = THREE.RepeatWrapping
+
+groundColorTexture.wrapT = THREE.RepeatWrapping
+groundARMTexture.wrapT = THREE.RepeatWrapping
+groundNormalTexture.wrapT = THREE.RepeatWrapping
+groundDisplacementTexture.wrapT = THREE.RepeatWrapping
+
+
+
 
 /**
  * Utils
  */
 const objectsToUpdate = []
-
 
 /**
  * Physics
@@ -173,11 +198,16 @@ const cannonDebugger = new CannonDebugger(scene, world)
  * Floor
  */
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(100, 100),
+  new THREE.PlaneGeometry(100, 100, 1000, 1000),
   new THREE.MeshStandardMaterial({
-    color: "#23423b",
-    metalness: 0.3,
-    roughness: 0.4,
+    // color: "#23423b",
+    map: groundColorTexture,
+    aoMap: groundARMTexture,
+    roughnessMap: groundARMTexture,
+    metalnessMap: groundARMTexture,
+    // displacementMap: groundDisplacementTexture,
+    // displacementBias: 0,
+    normalMap: groundNormalTexture,
   })
 )
 floor.receiveShadow = true
