@@ -170,7 +170,7 @@ const fontLoader = new FontLoader()
 fontLoader.load(
     'fonts/helvetiker_regular.typeface.json',
     (font) => {
-        const text = 'HAPPY BIRTHDAY, ZHANYM'
+        const text = 'HAPPY BIRTHDAY , ZHANYM'
 
         // Material
         const textMaterial = new THREE.MeshNormalMaterial()
@@ -244,7 +244,6 @@ const cannonDebugger = new CannonDebugger(scene, world, {
     onUpdate(body, mesh) {
         if (debugObject.physicsDebugger)
             mesh.visible = true
-            // gui.add(mesh, 'visible').name(`Body ${body.id}`)
         else if (!debugObject.physicsDebugger) {
             mesh.visible = false
         }
@@ -275,15 +274,24 @@ scene.add(floor)
  * Memories - Images
  */
 
-// Geometry
-const planeGeometry = new THREE.PlaneGeometry(2,2)
-
 // Mesh array for referencing in tick()
 const planeMeshes = []
 
-
 const generateMemoryPanels = () => {
-    memoryTextures.forEach(texture => {
+    // Calculate number of rows and columns based on length of memoryTextures
+    const numColumns = Math.ceil(Math.sqrt(memoryTextures.length))
+    const numRows = Math.ceil(memoryTextures.length / numColumns)
+
+    // Spacing between planes
+    const spacing = 3.5
+    
+    // Size of square plane
+    const planeSize = 6
+
+    // Geometry
+    const planeGeometry = new THREE.PlaneGeometry(planeSize, planeSize)
+
+    memoryTextures.forEach((texture, index) => {
         // Material
         const planeMaterial = new THREE.MeshBasicMaterial({
             map: texture,
@@ -293,10 +301,17 @@ const generateMemoryPanels = () => {
 
         // Mesh
         const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial)
-        
-        planeMesh.position.x = (Math.random() - 0.5) * 10
-        planeMesh.position.y = 1
-        planeMesh.position.z = (Math.random() - 0.5) * 10
+
+        // Get the current row
+        const row = Math.floor(index / numColumns)
+        // Get the current column
+        const column = index % numColumns
+
+        // Calculate x and z based on row and column
+        const x = ((planeSize + spacing) * (2 * column - numColumns)) / 2
+        const z = ((planeSize + spacing) * (2 * row - numRows)) / 2
+
+        planeMesh.position.set(x, 4, z)
 
         scene.add(planeMesh)
 
@@ -353,7 +368,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 )
-camera.position.set(1, 1, 2)
+camera.position.set(1, 6, 7)
 scene.add(camera)
 
 // Add audioListener to camera
