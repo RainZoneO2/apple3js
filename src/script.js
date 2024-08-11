@@ -5,6 +5,7 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
 import * as CANNON from "cannon-es"
 import CannonDebugger from "cannon-es-debugger"
+import { Sky } from "three/addons/objects/Sky.js"
 
 /**
  * Debug
@@ -39,8 +40,8 @@ const audioSource = new THREE.Audio( audioListener )
 audioLoader.load('sounds/the_love_cycle.mp3', function(buffer) {
     audioSource.setBuffer(buffer)
     audioSource.setLoop(true)
-    audioSource.setVolume(0)
-    // audioSource.play()
+    audioSource.setVolume(0.5)
+    audioSource.play()
 })
 
 /**
@@ -54,6 +55,7 @@ const groundColorTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_
 const groundARMTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_arm_1k.avif')
 const groundNormalTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_nor_gl_1k.avif')
 const groundDisplacementTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_disp_1k.avif')
+const groundAlphaTexture = textureLoader.load('floor/floorAlpha.webp')
 
 groundColorTexture.colorSpace = THREE.SRGBColorSpace
 
@@ -74,7 +76,7 @@ groundDisplacementTexture.wrapT = THREE.RepeatWrapping
 
 
 // Memories - Images
-const memoryAlphaTexture = textureLoader.load('memories/alpha.webp')
+const memoryAlphaTexture = textureLoader.load('memories/memoryAlpha.webp')
 
 const memoryTextures = []
 
@@ -209,6 +211,7 @@ fontLoader.load(
 
             const letterMesh = new THREE.Mesh(letterGeometry, textMaterial)
             letterMesh.position.x = offsetX
+            letterMesh.position.y = 5
             letterMesh.position.y = letterHeight / 2
             scene.add(letterMesh)
 
@@ -216,8 +219,10 @@ fontLoader.load(
             const body = new CANNON.Body({ 
                 mass: 1
             })
+
+            // letterHeight / 2 + 0.015
             body.addShape(shape)
-            body.position.set(letterMesh.position.x, letterHeight / 2 + 0.015, 0)
+            body.position.set(letterMesh.position.x, 5, 0)
             world.addBody(body)
             
             objectsToUpdate.push({
@@ -261,6 +266,8 @@ const floor = new THREE.Mesh(
     aoMap: groundARMTexture,
     roughnessMap: groundARMTexture,
     metalnessMap: groundARMTexture,
+    alphaMap: groundAlphaTexture,
+    transparent: true,
     // displacementMap: groundDisplacementTexture,
     // displacementBias: 0,
     normalMap: groundNormalTexture,
@@ -296,7 +303,8 @@ const generateMemoryPanels = () => {
         const planeMaterial = new THREE.MeshBasicMaterial({
             map: texture,
             transparent: true,
-            alphaMap: memoryAlphaTexture
+            alphaMap: memoryAlphaTexture,
+            depthWrite: false,
         })
 
         // Mesh
@@ -325,15 +333,8 @@ const generateMemoryPanels = () => {
 const ambientLight = new THREE.AmbientLight(0xffffff, 2.1)
 scene.add(ambientLight)
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6)
-directionalLight.castShadow = true
-directionalLight.shadow.mapSize.set(1024, 1024)
-directionalLight.shadow.camera.far = 15
-directionalLight.shadow.camera.left = -7
-directionalLight.shadow.camera.top = 7
-directionalLight.shadow.camera.right = 7
-directionalLight.shadow.camera.bottom = -7
-directionalLight.position.set(5, 5, 5)
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1.6)
+directionalLight.position.set(10, 10, 10)
 scene.add(directionalLight)
 
 /**
@@ -378,6 +379,9 @@ camera.add( audioListener )
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 
+controls.minDistance = 0.1
+controls.maxDistance = 60
+
 /**
  * Renderer
  */
@@ -388,6 +392,50 @@ renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+/**
+ * Shadows
+ */
+// Cast and receive
+directionalLight.castShadow = true
+
+// planeMeshes.forEach(mesh => {
+//     mesh.castShadow = true
+//     mesh.receiveShadow = true
+// })
+floor.receiveShadow = true
+
+// Mapping
+directionalLight.shadow.mapSize.set(512, 512)
+directionalLight.shadow.camera.far = 30
+directionalLight.shadow.camera.left = -7
+directionalLight.shadow.camera.top = 7
+directionalLight.shadow.camera.right = 7
+directionalLight.shadow.camera.bottom = -7
+
+/**
+ * Sky
+ */
+const sky = new Sky()
+sky.scale.set(100, 100, 100)
+scene.add(sky)
+
+sky.material.uniforms['turbidity'].value = 10
+sky.material.uniforms['rayleigh'].value = 3
+sky.material.uniforms['mieCoefficient'].value = 0.1
+sky.material.uniforms['mieDirectionalG'].value = 0.95
+sky.material.uniforms['sunPosition'].value.set(0.3, -0.038, -0.95)
+
+/**
+ * Fog
+ */
+scene.fog = new THREE.FogExp2('#871769', 0.08)
+
+const fogFolder = gui.addFolder('Fog')
+fogFolder.close()
+
+fogFolder.add(scene.fog, 'density').min(0).max(0.5).step(0.001)
+
 
 /**
  * Animate
@@ -413,9 +461,7 @@ const tick = () => {
     obj.mesh.quaternion.copy(obj.body.quaternion)
   })
 
-  // Update cannon debugger
-//   if (debugObject.physicsDebugger) {
-// }
+  // Update cannonDebugger
   cannonDebugger.update()
 
   // Update controls
