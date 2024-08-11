@@ -6,6 +6,22 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
 import * as CANNON from "cannon-es"
 import CannonDebugger from "cannon-es-debugger"
 import { Sky } from "three/addons/objects/Sky.js"
+import { gsap } from 'gsap'
+
+/**
+ * Loaders
+ */
+const loadingManager = new THREE.LoadingManager(
+    // Loaded
+    () => {
+        console.log('loaded')
+    },
+    // Progress
+    () => {
+        console.log('progress')
+    }
+)
+const textureLoader = new THREE.TextureLoader(loadingManager)
 
 /**
  * Debug
@@ -20,6 +36,7 @@ gui.add(debugObject, 'reset')
 debugObject.physicsDebugger = false
 gui.add(debugObject, 'physicsDebugger')
 
+
 /**
  * Base
  */
@@ -28,6 +45,35 @@ const canvas = document.querySelector("canvas.webgl")
 
 // Scene
 const scene = new THREE.Scene()
+
+/**
+ * Overlay
+ */
+const overlayGeometry = new THREE.PlaneGeometry(2,2,1,1)
+const overlayMaterial = new THREE.ShaderMaterial({
+    transparent: true,
+    uniforms: 
+    {
+        uAlpha: { value: 1}
+    },
+    vertexShader: `
+        void main() 
+        {
+            gl_Position = vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform float uAlpha;
+        void main()
+        {
+            gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha);
+        }
+    `,
+})
+const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial)
+scene.add(overlay)
+
+overlay.renderOrder = 2
 
 /**
  * Sounds
@@ -47,8 +93,6 @@ audioLoader.load('sounds/the_love_cycle.mp3', function(buffer) {
 /**
  * Textures
  */
- const textureLoader = new THREE.TextureLoader()
-// const cubeTextureLoader = new THREE.CubeTextureLoader()
 
 // Ground
 const groundColorTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_diff_1k.avif')
@@ -87,7 +131,7 @@ fetch(manifestUrl)
     .then(response => response.json())
     .then(imageFiles => {
         const filteredImages = imageFiles.filter(file => file.startsWith(memoryFolderPath))
-        console.log(filteredImages)
+        
         let loadedTextures = 0
 
         filteredImages.forEach(file => {
@@ -97,7 +141,7 @@ fetch(manifestUrl)
                 memoryTextures.push(texture)
                 loadedTextures++
                 
-                console.log('Loaded texture:', imageUrl)
+                // console.log('Loaded texture:', imageUrl)
             
                 // Check if all textures have been loaded
                 if (loadedTextures === filteredImages.length) {
@@ -107,7 +151,10 @@ fetch(manifestUrl)
                         console.log('Color space set to SRGB for texture & Mipmaps turned off');
                     });
                     console.log('All textures loaded:', memoryTextures.length);
-                
+                    
+                    gsap.to(overlayMaterial.uniforms.uAlpha, { duration:3, value: 0})
+                    
+
                     generateMemoryPanels()
                 }
             })
@@ -126,7 +173,6 @@ fetch(manifestUrl)
  * Utils
  */
 const objectsToUpdate = []
-
 
 /**
  * Physics
@@ -387,11 +433,14 @@ controls.maxDistance = 60
  */
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
+  antialias: true,
 })
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.toneMapping = THREE.ReinhardToneMapping
+renderer.toneMappingExposure = 3
 
 /**
  * Shadows
@@ -417,14 +466,41 @@ directionalLight.shadow.camera.bottom = -7
  * Sky
  */
 const sky = new Sky()
-sky.scale.set(100, 100, 100)
+sky.scale.setScalar(1000)
 scene.add(sky)
 
-sky.material.uniforms['turbidity'].value = 10
-sky.material.uniforms['rayleigh'].value = 3
-sky.material.uniforms['mieCoefficient'].value = 0.1
-sky.material.uniforms['mieDirectionalG'].value = 0.95
-sky.material.uniforms['sunPosition'].value.set(0.3, -0.038, -0.95)
+const skyEffectController = {
+    turbidity: 10,
+    rayleigh: 3,
+    mieCoefficient: 0.005,
+    mieDirectionalG: 0.7,
+    elevation: 2,
+    azimuth: 180,
+    exposure: renderer.toneMappingExposure
+}
+
+function updateSun() {
+    const uniforms = sky.material.uniforms
+    const phi = THREE.MathUtils.degToRad(90 - skyEffectController.elevation)
+    const theta = THREE.MathUtils.degToRad(skyEffectController.azimuth)
+    const sun = new THREE.Vector3()
+    sun.setFromSphericalCoords(1, phi, theta)
+    uniforms['sunPosition'].value.copy(sun)
+    renderer.toneMappingExposure = skyEffectController.exposure
+    // renderer.render(scene, camera)
+}
+
+const skyFolder = gui.addFolder('Sky')
+skyFolder.add(skyEffectController, 'turbidity', 0.0, 20.0, 0.1).onChange(updateSun)
+skyFolder.add(skyEffectController, 'rayleigh', 0.0, 4, 0.001).onChange(updateSun)
+skyFolder.add(skyEffectController, 'mieCoefficient', 0.0, 0.1, 0.001).onChange(updateSun)
+skyFolder.add(skyEffectController, 'mieDirectionalG', 0.0, 1, 0.001).onChange(updateSun)
+skyFolder.add(skyEffectController, 'elevation', 0, 90, 0.1).onChange(updateSun)
+skyFolder.add(skyEffectController, 'azimuth', -180, 180, 0.1).onChange(updateSun)
+skyFolder.add(skyEffectController, 'exposure', 0, 1, 0.0001).onChange(updateSun)
+skyFolder.close()
+
+updateSun()
 
 /**
  * Fog
