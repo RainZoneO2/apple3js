@@ -321,21 +321,28 @@ floor.receiveShadow = true
 floor.rotation.x = -Math.PI * 0.5
 scene.add(floor)
 
+// CAMERA Body
+// Body
+const cameraBody = new CANNON.Body({
+    position: new CANNON.Vec3(0,5,0),
+    shape: new CANNON.Box(new CANNON.Vec3(0.4, 0.4, 0.4)),
+    linearDamping: 0,
+    angularDamping: 0,
 
-// TEST sphere
-// Sphere moving towards right
-const radius = 1
-const sphereShape = new CANNON.Sphere(radius)
-const sphereBody = new CANNON.Body({ mass: 1 })
-sphereBody.addShape(sphereShape)
-sphereBody.position.set(-5, 0, 0)
-const impulse = new CANNON.Vec3(5.5, 0, 0)
-const topPoint = new CANNON.Vec3(0, radius, 0)
-sphereBody.applyImpulse(impulse, topPoint)
-sphereBody.linearDamping = 0.3
-sphereBody.angularDamping = 0.3
-world.addBody(sphereBody)
+    mass: 0.1
+})
+world.addBody(cameraBody)
 
+// Utils
+
+const moveCameraCollider = () => {
+    // Set the body position directly
+    cameraBody.position.copy(camera.position);
+    
+    // Optional: Set velocity to zero to avoid unintended movements
+    cameraBody.velocity.set(0, 0, 0);
+    cameraBody.angularVelocity.set(0, 0, 0);
+}
 
 /**
  * Memories - Images
@@ -394,8 +401,9 @@ const generateMemoryPanels = () => {
         world.addBody(triggerBody)
 
         triggerBody.addEventListener('collide', (event) => {
-            if (event.body === sphereBody) {
+            if (event.body === cameraBody) {
                 movePanel(index, 1)
+                console.log('test')
             }
         })
         
@@ -405,15 +413,14 @@ const generateMemoryPanels = () => {
         })
 
     })
-    console.log(world.bodies)
 }
 
 // Global event listeners for endContact on the world
 world.addEventListener('endContact', (event) => {
     const bodyA = event.bodyA
     const bodyB = event.bodyB
-    if (bodyA === sphereBody || bodyB === sphereBody) {
-        const otherBody = bodyA === sphereBody ? bodyB : bodyA
+    if (bodyA === cameraBody || bodyB === cameraBody) {
+        const otherBody = bodyA === cameraBody ? bodyB : bodyA
         const planeObject = planeObjects.find((obj) => obj.body === otherBody)
         if (planeObject) {
             const planeIndex = planeObjects.indexOf(planeObject)
@@ -425,21 +432,34 @@ world.addEventListener('endContact', (event) => {
 const spriteMaterial = new THREE.SpriteMaterial()
 const sprite = new THREE.Sprite(spriteMaterial)
 sprite.scale.set(3, 3, 1)
+sprite.visible = false
 scene.add(sprite)
+
 
 // Utils
 const cameraDirection = new THREE.Vector3()
 const distanceFromCamera = 2 // Distance from the camera
 let newPosition
 
+let currentTextureIndex = -1
+let currentAnimation = null
+
 const updateSpriteMaterial = (textureIndex) => {
-    console.log(sprite.scale)
+    if (currentAnimation) {
+        gsap.killTweensOf(sprite.scale)
+        gsap.killTweensOf(sprite)
+    }
+
+    currentTextureIndex = textureIndex
+
     if (textureIndex === -1) {
-        gsap.to(sprite.scale, { duration: 0.5, x:0, y:0, z: 0, onComplete: () => sprite.visible = false})
+        currentAnimation = gsap.to(sprite.scale, { duration: 0.5, x:0, y:0, z: 0, onComplete: () => sprite.visible = false})
     } else {
-        gsap.to(sprite.scale, {duration: 0.5, x:3, y:3, z: 3, onStart: () => sprite.visible = true})
-        sprite.material.map = memoryTextures[textureIndex]
-        sprite.material.needsUpdate = true
+        sprite.visible = true
+        currentAnimation = gsap.to(sprite.scale, {duration: 0.5, x:3, y:3, z: 3, onStart: () => {
+            sprite.material.map = memoryTextures[textureIndex];
+            sprite.material.needsUpdate = true;
+        }})
     }
 }
 
@@ -515,6 +535,7 @@ controls.enableDamping = true
 
 controls.minDistance = 0.1
 controls.maxDistance = 60
+
 
 /**
  * Renderer
@@ -620,6 +641,9 @@ const tick = () => {
     obj.mesh.position.copy(obj.body.position)
     obj.mesh.quaternion.copy(obj.body.quaternion)
   })
+
+  // Update camera body
+  moveCameraCollider()
 
   // Update cannonDebugger
   cannonDebugger.update()
