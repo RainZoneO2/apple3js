@@ -17,6 +17,9 @@ export default {
         ]
     }
   },
+  esbuild: {
+    target: 'esnext'
+  },
   plugins: [
     restart({ restart: ["../static/**"] }), // Restart server on static file change
   ],

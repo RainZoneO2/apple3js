@@ -69,6 +69,7 @@ const overlayMaterial = new THREE.ShaderMaterial({
             gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha);
         }
     `,
+
 })
 const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial)
 scene.add(overlay)
@@ -146,11 +147,11 @@ fetch(manifestUrl)
                 // Check if all textures have been loaded
                 if (loadedTextures === filteredImages.length) {
                     memoryTextures.forEach(texture => {
-                        texture.colorSpace = THREE.SRGBColorSpace;
+                        texture.colorSpace = THREE.SRGBColorSpace
                         texture.generateMipmaps = false
-                        console.log('Color space set to SRGB for texture & Mipmaps turned off');
-                    });
-                    console.log('All textures loaded:', memoryTextures.length);
+                        console.log('Color space set to SRGB for texture & Mipmaps turned off')
+                    })
+                    console.log('All textures loaded:', memoryTextures.length)
                     
                     gsap.to(overlayMaterial.uniforms.uAlpha, { duration:3, value: 0})
                     
@@ -167,7 +168,6 @@ fetch(manifestUrl)
     .catch(error => {
         console.error('Error fetching manifest or images:', error)
     })
-
 
 /**
  * Utils
@@ -249,16 +249,15 @@ fontLoader.load(
             letterGeometry.computeBoundingBox()
             const letterBoundingBox = letterGeometry.boundingBox
 
-            const letterWidth = letterBoundingBox.max.x - letterBoundingBox.min.x;
-            const letterHeight = letterBoundingBox.max.y - letterBoundingBox.min.y;
-            const letterDepth = letterBoundingBox.max.z - letterBoundingBox.min.z;
+            const letterWidth = letterBoundingBox.max.x - letterBoundingBox.min.x
+            const letterHeight = letterBoundingBox.max.y - letterBoundingBox.min.y
+            const letterDepth = letterBoundingBox.max.z - letterBoundingBox.min.z
             
             totalWidth += letterWidth + 0.08
 
             const letterMesh = new THREE.Mesh(letterGeometry, textMaterial)
             letterMesh.position.x = offsetX
-            letterMesh.position.y = 5
-            letterMesh.position.y = letterHeight / 2
+            letterMesh.position.y = letterHeight / 2 + 3
             scene.add(letterMesh)
 
             const shape = new CANNON.Box(new CANNON.Vec3(letterWidth / 2, letterHeight / 2, letterDepth / 2))
@@ -266,9 +265,8 @@ fontLoader.load(
                 mass: 1
             })
 
-            // letterHeight / 2 + 0.015
             body.addShape(shape)
-            body.position.set(letterMesh.position.x, 5, 0)
+            body.position.set(letterMesh.position.x, letterMesh.position.y, 0)
             world.addBody(body)
             
             objectsToUpdate.push({
@@ -323,12 +321,28 @@ floor.receiveShadow = true
 floor.rotation.x = -Math.PI * 0.5
 scene.add(floor)
 
+
+// TEST sphere
+// Sphere moving towards right
+const radius = 1
+const sphereShape = new CANNON.Sphere(radius)
+const sphereBody = new CANNON.Body({ mass: 1 })
+sphereBody.addShape(sphereShape)
+sphereBody.position.set(-5, 0, 0)
+const impulse = new CANNON.Vec3(5.5, 0, 0)
+const topPoint = new CANNON.Vec3(0, radius, 0)
+sphereBody.applyImpulse(impulse, topPoint)
+sphereBody.linearDamping = 0.3
+sphereBody.angularDamping = 0.3
+world.addBody(sphereBody)
+
+
 /**
  * Memories - Images
  */
 
 // Mesh array for referencing in tick()
-const planeMeshes = []
+const planeObjects = []
 
 const generateMemoryPanels = () => {
     // Calculate number of rows and columns based on length of memoryTextures
@@ -343,6 +357,9 @@ const generateMemoryPanels = () => {
 
     // Geometry
     const planeGeometry = new THREE.PlaneGeometry(planeSize, planeSize)
+
+    // Body Geometry
+    const boxShape = new CANNON.Box(new CANNON.Vec3(planeSize * 0.5, 3, planeSize * 0.5))
 
     memoryTextures.forEach((texture, index) => {
         // Material
@@ -369,8 +386,79 @@ const generateMemoryPanels = () => {
 
         scene.add(planeMesh)
 
-        planeMeshes.push(planeMesh)
+        // Trigger zone for panel
+        const triggerBody = new CANNON.Body({ isTrigger: true })
+        triggerBody.addShape(boxShape)
+        triggerBody.position.set(x, 3, z)
+
+        world.addBody(triggerBody)
+
+        triggerBody.addEventListener('collide', (event) => {
+            if (event.body === sphereBody) {
+                movePanel(index, 1)
+            }
+        })
+        
+        planeObjects.push({
+            mesh: planeMesh,
+            body: triggerBody,
+        })
+
     })
+    console.log(world.bodies)
+}
+
+// Global event listeners for endContact on the world
+world.addEventListener('endContact', (event) => {
+    const bodyA = event.bodyA
+    const bodyB = event.bodyB
+    if (bodyA === sphereBody || bodyB === sphereBody) {
+        const otherBody = bodyA === sphereBody ? bodyB : bodyA
+        const planeObject = planeObjects.find((obj) => obj.body === otherBody)
+        if (planeObject) {
+            const planeIndex = planeObjects.indexOf(planeObject)
+            movePanel(planeIndex, 0)
+        }
+    }
+})
+
+const spriteMaterial = new THREE.SpriteMaterial()
+const sprite = new THREE.Sprite(spriteMaterial)
+sprite.scale.set(3, 3, 1)
+scene.add(sprite)
+
+// Utils
+const cameraDirection = new THREE.Vector3()
+const distanceFromCamera = 2 // Distance from the camera
+let newPosition
+
+const updateSpriteMaterial = (textureIndex) => {
+    console.log(sprite.scale)
+    if (textureIndex === -1) {
+        gsap.to(sprite.scale, { duration: 0.5, x:0, y:0, z: 0, onComplete: () => sprite.visible = false})
+    } else {
+        gsap.to(sprite.scale, {duration: 0.5, x:3, y:3, z: 3, onStart: () => sprite.visible = true})
+        sprite.material.map = memoryTextures[textureIndex]
+        sprite.material.needsUpdate = true
+    }
+}
+
+const updateSpritePosition = () => {
+    // Calculate the position in front of the camera
+    camera.getWorldDirection(cameraDirection)
+
+    newPosition = new THREE.Vector3().copy(camera.position).add(cameraDirection.multiplyScalar(distanceFromCamera))
+
+    // Update the sprite's position
+    sprite.position.copy(newPosition)
+}
+
+const movePanel = (index, directionFlag) => {
+    if (directionFlag === 1) {
+        updateSpriteMaterial(index)
+    } else if (directionFlag === 0) {
+        updateSpriteMaterial(-1)
+    }
 }
 
 /**
@@ -440,18 +528,13 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.toneMapping = THREE.ReinhardToneMapping
-renderer.toneMappingExposure = 3
+renderer.toneMappingExposure = 1
 
 /**
  * Shadows
  */
 // Cast and receive
 directionalLight.castShadow = true
-
-// planeMeshes.forEach(mesh => {
-//     mesh.castShadow = true
-//     mesh.receiveShadow = true
-// })
 floor.receiveShadow = true
 
 // Mapping
@@ -487,7 +570,6 @@ function updateSun() {
     sun.setFromSphericalCoords(1, phi, theta)
     uniforms['sunPosition'].value.copy(sun)
     renderer.toneMappingExposure = skyEffectController.exposure
-    // renderer.render(scene, camera)
 }
 
 const skyFolder = gui.addFolder('Sky')
@@ -512,7 +594,6 @@ fogFolder.close()
 
 fogFolder.add(scene.fog, 'density').min(0).max(0.5).step(0.001)
 
-
 /**
  * Animate
  */
@@ -525,9 +606,12 @@ const tick = () => {
   oldElapsedTime = elapsedTime
 
   // Update memory planes
-  planeMeshes.forEach(planeMesh => {
-    planeMesh.lookAt(camera.position)
+  planeObjects.forEach(obj => {
+    obj.mesh.lookAt(camera.position)
   })
+
+  // Update sprite
+  updateSpritePosition()
  
   // Update physics world
   world.step(1/60, deltaTime, 3)
@@ -539,6 +623,7 @@ const tick = () => {
 
   // Update cannonDebugger
   cannonDebugger.update()
+
 
   // Update controls
   controls.update()
