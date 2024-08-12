@@ -303,7 +303,7 @@ const cannonDebugger = new CannonDebugger(scene, world, {
  * Floor
  */
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(100, 100, 1000, 1000),
+  new THREE.PlaneGeometry(100, 100, 10, 10),
   new THREE.MeshStandardMaterial({
     color: "#324c8c",
     map: groundColorTexture,
@@ -533,8 +533,11 @@ camera.add( audioListener )
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 
-controls.minDistance = 0.1
+controls.target.set(0, 0.2, 0)
+controls.minDistance = 2
 controls.maxDistance = 60
+controls.minPolarAngle = 0
+controls.maxPolarAngle = Math.PI / 2
 
 
 /**
