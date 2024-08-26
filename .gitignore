@@ -1,3 +1,7 @@
+# Static files
+static/memories/textures
+static/manifest.json
+
 # Logs
 logs
 *.log
