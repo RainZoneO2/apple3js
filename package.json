@@ -7,6 +7,8 @@
     "generate-manifest": "node generate-manifest.js",
     "predev": "npm run process-images && npm run generate-manifest",
     "dev": "vite",
+    "prebuild": "npm run process-images && npm run generate-manifest",
+    "preview": "vite preview",
     "build": "vite build"
   },
   "dependencies": {

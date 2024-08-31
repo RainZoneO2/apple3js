@@ -257,7 +257,7 @@ fontLoader.load(
 
             const letterMesh = new THREE.Mesh(letterGeometry, textMaterial)
             letterMesh.position.x = offsetX
-            letterMesh.position.y = letterHeight / 2 + 3
+            letterMesh.position.y = letterHeight / 2 + 0.5
             scene.add(letterMesh)
 
             const shape = new CANNON.Box(new CANNON.Vec3(letterWidth / 2, letterHeight / 2, letterDepth / 2))
@@ -552,7 +552,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.toneMapping = THREE.ReinhardToneMapping
-renderer.toneMappingExposure = 1
+renderer.toneMappingExposure = 0.5
 
 /**
  * Shadows
@@ -579,9 +579,9 @@ scene.add(sky)
 const skyEffectController = {
     turbidity: 10,
     rayleigh: 3,
-    mieCoefficient: 0.005,
-    mieDirectionalG: 0.7,
-    elevation: 2,
+    mieCoefficient: 0.1,
+    mieDirectionalG: 0.95,
+    elevation: 0,
     azimuth: 180,
     exposure: renderer.toneMappingExposure
 }
