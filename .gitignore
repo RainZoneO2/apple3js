@@ -1,6 +1,11 @@
 # Static files
-static/memories/textures
+static/memories/textures/avif/*
+static/memories/textures/jpg/*
+static/memories/textures/webp/*
+static/memories/textures/processed/*
+static/memories/textures/to-process/*
 static/manifest.json
+!.gitkeep
 
 # Logs
 logs
