@@ -44,8 +44,13 @@ Follow these three steps:
    ```bash
    npm run preview
    ```
+   Your application will be available at `http://localhost:5173` by default.
 
-Your application will be available at `http://localhost:5173` by default.
+4. **Playing around in the gallery**
+   - To pan around the gallery hold `LEFT_CLICK` and move your mouse.
+   - To zoom in/out, use the `SCROLL_WHEEL`.
+   - When your camera is close enough to a memory, it will expand as a card.
+
 
 ## Project Structure
 
