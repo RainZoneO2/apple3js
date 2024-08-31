@@ -67,7 +67,3 @@ Contributions are welcome! If you’d like to make changes or add new features, 
 6. Open a Pull Request.
 
 For major changes, it's recommended to open an issue first to discuss what you would like to change.
-
-## License
-
-This project is licensed under the [MIT License](https://choosealicense.com/licenses/mit/).
