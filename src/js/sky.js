@@ -22,7 +22,7 @@ export const skyEffectController = {
     exposure: renderer.toneMappingExposure,
 }
 
-function updateSun() {
+export function updateSun() {
     const uniforms = sky.material.uniforms
     const phi = THREE.MathUtils.degToRad(90 - skyEffectController.elevation)
     const theta = THREE.MathUtils.degToRad(skyEffectController.azimuth)

@@ -18,6 +18,7 @@ import { updateAtmosphere } from './js/atmosphere.js'
 import { initModal } from './js/modal.js'
 import { initGalleryInteraction } from './js/gallery.js'
 import { throwApple } from './js/apples.js'
+import { updateDayNight } from './js/day-night.js'
 
 // Add audioListener to camera
 attachAudioListener(camera)
@@ -105,6 +106,7 @@ const tick = () => {
     controls.update()
 
     // Render
+    updateDayNight(elapsedTime)
     updateAtmosphere(elapsedTime)
     composer.render()
 
