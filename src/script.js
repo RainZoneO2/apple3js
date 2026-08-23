@@ -16,8 +16,10 @@ import { CONFIG } from './js/config.js'
 import { composer, setComposerSize } from './js/postprocessing.js'
 import { updateAtmosphere } from './js/atmosphere.js'
 import { initModal } from './js/modal.js'
-import { initGalleryInteraction } from './js/gallery.js'
+import { initGalleryInteraction, onPanelsReady, getPanelCount, getPanelPosition, getPanelSource, focusPanel, unfocusPanel } from './js/gallery.js'
 import { throwApple } from './js/apples.js'
+import { flyToPanel, startTour, stopTour, isTourActive } from './js/tour.js'
+import { openMemory, currentHashMemory } from './js/modal.js'
 import { updateDayNight } from './js/day-night.js'
 
 // Add audioListener to camera
@@ -41,9 +43,41 @@ onLoadProgress(({ loaded, total }) => {
     }
 })
 
+// A #memory-N hash requests a direct flight to that memory after entering
+const requestedMemory = currentHashMemory()
+
+const visitMemory = (index) => {
+    if (index === null || index >= getPanelCount()) return
+    flyToPanel(getPanelPosition(index))
+    focusPanel(index)
+    openMemory({ url: getPanelSource(index), index })
+}
+
 startButton.addEventListener('click', () => {
     requestAudioStart()
     startScreen.classList.add('hidden')
+
+    if (requestedMemory !== null) {
+        onPanelsReady(() => visitMemory(requestedMemory))
+    }
+})
+
+/**
+ * Auto-tour
+ */
+const tourToggle = document.querySelector('#tour-toggle')
+
+tourToggle.addEventListener('click', () => {
+    const starting = !isTourActive()
+
+    if (starting) {
+        startTour(getPanelCount(), getPanelPosition, focusPanel)
+    } else {
+        stopTour()
+        unfocusPanel()
+    }
+
+    tourToggle.textContent = starting ? 'Stop tour' : 'Start tour'
 })
 
 initModal()

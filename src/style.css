@@ -195,3 +195,24 @@ body {
 {
     background: rgba(255, 255, 255, 0.15);
 }
+
+#tour-toggle
+{
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    z-index: 5;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#tour-toggle:hover
+{
+    background: rgba(255, 255, 255, 0.2);
+}

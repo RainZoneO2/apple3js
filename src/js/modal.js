@@ -25,13 +25,22 @@ const lookupCaption = (url) => {
     return metadata[fileName] ?? {}
 }
 
-export const openMemory = ({ url }) => {
+export const openMemory = ({ url, index }) => {
     const caption = lookupCaption(url)
 
     modalImg().src = url
     modalTitle().textContent = caption.title || prettifyFileName(url)
     modalDate().textContent = caption.date || ''
     modalRoot().classList.remove('hidden')
+
+    if (typeof index === 'number') {
+        history.replaceState(null, '', `#memory-${index}`)
+    }
+}
+
+export const currentHashMemory = () => {
+    const match = window.location.hash.match(/^#memory-(\d+)$/)
+    return match ? Number(match[1]) : null
 }
 
 const prettifyFileName = (url) => {
@@ -41,6 +50,10 @@ const prettifyFileName = (url) => {
 
 export const closeModal = () => {
     modalRoot().classList.add('hidden')
+
+    if (window.location.hash.startsWith('#memory-')) {
+        history.replaceState(null, '', window.location.pathname)
+    }
 }
 
 export const isModalOpen = () => !modalRoot().classList.contains('hidden')

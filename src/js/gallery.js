@@ -71,6 +71,9 @@ const loadMemoryTextures = async () => {
 
     revealScene()
     generateMemoryPanels()
+
+    panelsReady = true
+    readyCallbacks.forEach((callback) => callback())
 }
 
 // Only one memory is shown at a time; cannon-es fires 'collide' on every
@@ -209,6 +212,28 @@ const updateSpritePosition = (camera) => {
     sprite.position.copy(spritePosition)
 }
 
+// Resolved once panels exist; used by deep links and the tour mode
+const readyCallbacks = []
+let panelsReady = false
+
+export const onPanelsReady = (callback) => {
+    if (panelsReady) callback()
+    else readyCallbacks.push(callback)
+}
+
+export const getPanelCount = () => planeObjects.length
+
+export const getPanelPosition = (index) => planeObjects[index].mesh.position.clone()
+
+// Show a panel's card without needing camera proximity (deep links, tour)
+export const focusPanel = (index) => {
+    if (planeObjects[index]) showPanel(index)
+}
+
+export const unfocusPanel = () => hidePanel()
+
+export const getPanelSource = (index) => panelSources[index]
+
 loadMemoryTextures()
 
 // Called from the render loop
@@ -260,7 +285,7 @@ export const initGalleryInteraction = (camera, canvas) => {
 
         const panelIndex = panelAtPointer(event, camera, canvas)
         if (panelIndex !== -1 && memoryTextures[panelIndex]) {
-            openMemory({ url: panelSources[panelIndex] })
+            openMemory({ url: panelSources[panelIndex], index: panelIndex })
         }
     })
 
