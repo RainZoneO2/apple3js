@@ -6,7 +6,6 @@ import { canvas, updateRendererSize } from './js/renderer.js'
 import { camera, controls, updateCameraAspect } from './js/camera.js'
 import { stepWorld, syncMeshes, moveCameraCollider } from './js/physics.js'
 import { updatePhysicsDebugger } from './js/debug-gui.js'
-import './js/sky.js'
 import './js/environment.js'
 import './js/greeting-text.js'
 import { updateGallery } from './js/gallery.js'
@@ -28,7 +27,7 @@ import {
 import { throwApple } from './js/apples.js'
 import { flyToPanel, startTour, stopTour, isTourActive } from './js/tour.js'
 import { openMemory, currentHashMemory } from './js/modal.js'
-import { updateDayNight } from './js/day-night.js'
+import { updateGalaxySky } from './js/galaxy-sky.js'
 
 // Add audioListener to camera
 attachAudioListener(camera)
@@ -144,7 +143,7 @@ const tick = () => {
     controls.update()
 
     // Render
-    updateDayNight(elapsedTime)
+    updateGalaxySky(elapsedTime)
     updateAtmosphere(elapsedTime)
     composer.render()
 

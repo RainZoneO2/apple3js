@@ -14,9 +14,9 @@ composer.addPass(new RenderPass(scene, camera))
 
 const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(sizes.width, sizes.height),
-    0.35, // strength
+    0.45, // strength
     0.7, // radius
-    0.85, // threshold
+    0.55, // threshold
 )
 composer.addPass(bloomPass)
 

@@ -27,20 +27,19 @@ export const CONFIG = {
     },
 
     theme: {
-        toneMappingExposure: 1.1,
-        fogColor: '#871769',
-        fogDensity: 0.035,
+        toneMappingExposure: 1.25,
+        fogColor: '#150a20',
+        fogDensity: 0.02,
         floorColor: '#324c8c',
-        ambientIntensity: 2.1,
-        directionalIntensity: 1.6,
+        ambientIntensity: 0.7,
+        directionalColor: '#8fa3ff',
+        directionalIntensity: 0.6,
     },
 
-    sky: {
-        turbidity: 10,
-        rayleigh: 3,
-        mieCoefficient: 0.1,
-        mieDirectionalG: 0.95,
-        elevation: 15,
-        azimuth: 180,
+    galaxy: {
+        nebulaStrength: 1.0,
+        starIntensity: 1.1,
+        bandStrength: 0.9,
+        rotationSpeed: 0.004,
     },
 }

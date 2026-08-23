@@ -54,7 +54,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, CONFIG.theme.ambientIntens
 scene.add(ambientLight)
 
 export const directionalLight = new THREE.DirectionalLight(
-    0xffffff,
+    CONFIG.theme.directionalColor,
     CONFIG.theme.directionalIntensity,
 )
 directionalLight.position.set(10, 10, 10)
