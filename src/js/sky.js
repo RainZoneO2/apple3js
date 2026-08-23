@@ -3,6 +3,7 @@ import { Sky } from 'three/addons/objects/Sky.js'
 import { scene } from './scene.js'
 import { renderer } from './renderer.js'
 import { gui } from './debug-gui.js'
+import { CONFIG } from './config.js'
 
 /**
  * Sky
@@ -12,12 +13,12 @@ sky.scale.setScalar(1000)
 scene.add(sky)
 
 export const skyEffectController = {
-    turbidity: 10,
-    rayleigh: 3,
-    mieCoefficient: 0.1,
-    mieDirectionalG: 0.95,
-    elevation: 15,
-    azimuth: 180,
+    turbidity: CONFIG.sky.turbidity,
+    rayleigh: CONFIG.sky.rayleigh,
+    mieCoefficient: CONFIG.sky.mieCoefficient,
+    mieDirectionalG: CONFIG.sky.mieDirectionalG,
+    elevation: CONFIG.sky.elevation,
+    azimuth: CONFIG.sky.azimuth,
     exposure: renderer.toneMappingExposure,
 }
 

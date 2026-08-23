@@ -5,6 +5,7 @@ import { scene, revealScene } from './scene.js'
 import { textureLoader } from './loaders.js'
 import { world, cameraBody } from './physics.js'
 import { registerAssets, markAssetLoaded } from './loading.js'
+import { CONFIG } from './config.js'
 
 /**
  * Memories - Images
@@ -14,8 +15,8 @@ const memoryAlphaTexture = textureLoader.load('/memories/memoryAlpha.webp')
 // Mesh array for referencing in tick()
 const planeObjects = []
 
-const memoryFolderPrefix = 'memories/textures/webp/'
-const manifestUrl = '/manifest.json'
+const memoryFolderPrefix = CONFIG.gallery.folderPrefix
+const manifestUrl = CONFIG.gallery.manifestUrl
 
 const memoryTextures = []
 
@@ -91,10 +92,10 @@ const generateMemoryPanels = () => {
     const numRows = Math.ceil(memoryTextures.length / numColumns)
 
     // Spacing between planes
-    const spacing = 3.5
+    const spacing = CONFIG.gallery.planeSpacing
 
     // Size of square plane
-    const planeSize = 6
+    const planeSize = CONFIG.gallery.planeSize
 
     // Geometry
     const planeGeometry = new THREE.PlaneGeometry(planeSize, planeSize)
@@ -123,7 +124,7 @@ const generateMemoryPanels = () => {
         const x = ((planeSize + spacing) * (2 * column - numColumns)) / 2
         const z = ((planeSize + spacing) * (2 * row - numRows)) / 2
 
-        planeMesh.position.set(x, 4, z)
+        planeMesh.position.set(x, CONFIG.gallery.panelHeight, z)
 
         scene.add(planeMesh)
 

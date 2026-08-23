@@ -1,12 +1,13 @@
 import { audioLoader } from './loaders.js'
 import * as THREE from 'three'
 import { registerAssets, markAssetLoaded } from './loading.js'
+import { CONFIG } from './config.js'
 
 const audioListener = new THREE.AudioListener()
 
 export const audioSource = new THREE.Audio(audioListener)
 
-const BASE_VOLUME = 0.5
+const BASE_VOLUME = CONFIG.audio.volume
 let muted = false
 
 // Browsers block audio until the user interacts with the page, so playback is

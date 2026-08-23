@@ -12,6 +12,7 @@ import './js/greeting-text.js'
 import { updateGallery } from './js/gallery.js'
 import { requestAudioStart, attachAudioListener, toggleMute, nextTrack } from './js/sounds.js'
 import { onLoadProgress } from './js/loading.js'
+import { CONFIG } from './js/config.js'
 
 // Add audioListener to camera
 attachAudioListener(camera)
@@ -19,6 +20,7 @@ attachAudioListener(camera)
 /**
  * Start screen
  */
+document.querySelector('.start-title').textContent = CONFIG.title
 const startScreen = document.querySelector('#start-screen')
 const startButton = document.querySelector('#start-button')
 const progressFill = document.querySelector('#progress-fill')

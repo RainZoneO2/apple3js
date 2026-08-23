@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { scene } from './scene.js'
 import { textureLoader } from './loaders.js'
 import { gui } from './debug-gui.js'
+import { CONFIG } from './config.js'
 
 /**
  * Ground textures
@@ -29,7 +30,7 @@ groundTextures.forEach((texture) => {
 const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(100, 100, 10, 10),
     new THREE.MeshStandardMaterial({
-        color: '#324c8c',
+        color: CONFIG.theme.floorColor,
         map: groundColorTexture,
         aoMap: groundARMTexture,
         roughnessMap: groundARMTexture,
@@ -46,10 +47,10 @@ scene.add(floor)
 /**
  * Lights
  */
-const ambientLight = new THREE.AmbientLight(0xffffff, 2.1)
+const ambientLight = new THREE.AmbientLight(0xffffff, CONFIG.theme.ambientIntensity)
 scene.add(ambientLight)
 
-export const directionalLight = new THREE.DirectionalLight(0xffffff, 1.6)
+export const directionalLight = new THREE.DirectionalLight(0xffffff, CONFIG.theme.directionalIntensity)
 directionalLight.position.set(10, 10, 10)
 scene.add(directionalLight)
 
@@ -68,7 +69,7 @@ directionalLight.shadow.camera.bottom = -7
 /**
  * Fog
  */
-scene.fog = new THREE.FogExp2('#871769', 0.035)
+scene.fog = new THREE.FogExp2(CONFIG.theme.fogColor, CONFIG.theme.fogDensity)
 
 const fogFolder = gui && gui.addFolder('Fog')
 if (fogFolder) {

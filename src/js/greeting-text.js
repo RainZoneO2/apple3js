@@ -1,5 +1,6 @@
 import * as CANNON from 'cannon-es'
 import * as THREE from 'three'
+import { CONFIG } from './config.js'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
 import { scene } from './scene.js'
@@ -13,7 +14,7 @@ registerAssets(1)
 fontLoader.load(
     '/fonts/helvetiker_regular.typeface.json',
     (font) => {
-        const text = 'HAPPY BIRTHDAY , ZHANYM'
+        const text = CONFIG.greetingText
 
         // Material
         const textMaterial = new THREE.MeshNormalMaterial()
