@@ -10,7 +10,7 @@ import './js/sky.js'
 import './js/environment.js'
 import './js/greeting-text.js'
 import { updateGallery } from './js/gallery.js'
-import { requestAudioStart, attachAudioListener, toggleMute, nextTrack } from './js/sounds.js'
+import { requestAudioStart, attachAudioListener, toggleMute } from './js/sounds.js'
 import { onLoadProgress } from './js/loading.js'
 import { CONFIG } from './js/config.js'
 import { composer, setComposerSize } from './js/postprocessing.js'
@@ -98,10 +98,6 @@ const muteToggle = document.querySelector('#mute-toggle')
 
 muteToggle.addEventListener('click', () => {
     muteToggle.textContent = toggleMute() ? 'Sound: Off' : 'Sound: On'
-})
-
-document.querySelector('#next-track').addEventListener('click', () => {
-    nextTrack()
 })
 
 /**

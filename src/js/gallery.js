@@ -5,6 +5,7 @@ import { textureLoader } from './loaders.js'
 import { registerAssets, markAssetLoaded } from './loading.js'
 import { CONFIG } from './config.js'
 import { openMemory, isModalOpen } from './modal.js'
+import { setMemoryDucked } from './sounds.js'
 
 /**
  * Memories - Images
@@ -82,12 +83,14 @@ const showPanel = (index) => {
     if (activePanelIndex === index) return
     activePanelIndex = index
     updateSpriteMaterial(index)
+    setMemoryDucked(true)
 }
 
 const hidePanel = () => {
     if (activePanelIndex === -1) return
     activePanelIndex = -1
     updateSpriteMaterial(-1)
+    setMemoryDucked(false)
 }
 
 const generateMemoryPanels = () => {

@@ -5,80 +5,104 @@ import { CONFIG } from './config.js'
 
 const audioListener = new THREE.AudioListener()
 
-export const audioSource = new THREE.Audio(audioListener)
-
-const BASE_VOLUME = CONFIG.audio.volume
-let muted = false
-
-// Browsers block audio until the user interacts with the page, so playback is
-// deferred until the start screen button is clicked.
-let startRequested = false
-
-// Tracks cycle in order; buffers are cached after first load
-const TRACKS = ['/sounds/the_love_cycle.mp3', '/sounds/the_love_cycle_guitar.mp3']
-let currentTrackIndex = 0
-const bufferCache = new Map()
-
-const tryPlayAudio = () => {
-    if (!startRequested || !audioSource.buffer) return
-    if (audioListener.context.state === 'suspended') audioListener.context.resume()
-    audioSource.play()
-}
-
-registerAssets(1)
-audioLoader.load(
-    TRACKS[0],
-    function (buffer) {
-        audioSource.setBuffer(buffer)
-        audioSource.setLoop(true)
-        audioSource.setVolume(BASE_VOLUME)
-        bufferCache.set(TRACKS[0], buffer)
-        markAssetLoaded()
-        tryPlayAudio()
-    },
-    undefined,
-    function (error) {
-        console.error('Failed to load music:', error)
-        markAssetLoaded()
-    },
-)
-
-export const requestAudioStart = () => {
-    startRequested = true
-    tryPlayAudio()
-}
-
 export const attachAudioListener = (camera) => {
     camera.add(audioListener)
 }
 
+/**
+ * Dual-source instrument crossfade.
+ *
+ * Both arrangements are 1:42 and identical in length. They are played by two
+ * sources started in the same tick, so they loop in perfect lockstep forever.
+ * The guitar source sits silent until a memory card opens, then a gain ramp
+ * swaps the audible arrangement mid-song - same timeline, different
+ * instruments. Closing the card swaps back.
+ */
+const MAIN_TRACK = '/sounds/the_love_cycle.mp3'
+const GUITAR_TRACK = '/sounds/the_love_cycle_guitar.mp3'
+
+const FADE_SECONDS = 1.5
+const MUTE_FADE_SECONDS = 0.2
+
+registerAssets(2)
+
+const mainAudio = new THREE.Audio(audioListener)
+const guitarAudio = new THREE.Audio(audioListener)
+
+// Mix roles: how much of each arrangement is audible (0..1)
+let mainLevel = 1
+let guitarLevel = 0
+let startRequested = false
+let playbackStarted = false
+let muted = false
+
+const buffers = {}
+
+const onBuffer = (key) => (buffer) => {
+    buffers[key] = buffer
+    markAssetLoaded()
+    tryStartPlayback()
+}
+
+const onError = (key) => (error) => {
+    console.error(`Failed to load ${key} track:`, error)
+    markAssetLoaded()
+}
+
+audioLoader.load(MAIN_TRACK, onBuffer('main'), undefined, onError('main'))
+audioLoader.load(GUITAR_TRACK, onBuffer('guitar'), undefined, onError('guitar'))
+
+const volumeFor = (trackLevel) => (muted ? 0 : CONFIG.audio.volume * trackLevel)
+
+const rampGain = (audio, target, seconds) => {
+    const now = audioListener.context.currentTime
+    const param = audio.gain.gain
+    param.cancelScheduledValues(now)
+    param.setValueAtTime(param.value, now)
+    param.linearRampToValueAtTime(target, now + seconds)
+}
+
+const refreshMix = (seconds = FADE_SECONDS) => {
+    rampGain(mainAudio, volumeFor(mainLevel), seconds)
+    rampGain(guitarAudio, volumeFor(guitarLevel), seconds)
+}
+
+const tryStartPlayback = () => {
+    if (!startRequested || playbackStarted || !buffers.main || !buffers.guitar) return
+
+    if (audioListener.context.state === 'suspended') audioListener.context.resume()
+
+    mainAudio.setBuffer(buffers.main)
+    guitarAudio.setBuffer(buffers.guitar)
+
+    // THREE.Audio gains start at 0; set the initial mix directly so both
+    // sources can be launched in the same tick and stay in lockstep.
+    mainAudio.setVolume(volumeFor(mainLevel))
+    guitarAudio.setVolume(volumeFor(guitarLevel))
+    mainAudio.play()
+    guitarAudio.play()
+
+    playbackStarted = true
+}
+
+export const requestAudioStart = () => {
+    startRequested = true
+    tryStartPlayback()
+}
+
+// Called when a memory card opens/closes
+export const setMemoryDucked = (ducked) => {
+    const nextMainLevel = ducked ? 0 : 1
+    if (mainLevel === nextMainLevel) return
+
+    mainLevel = nextMainLevel
+    guitarLevel = ducked ? 1 : 0
+
+    if (playbackStarted) refreshMix(FADE_SECONDS)
+}
+
 export const toggleMute = () => {
     muted = !muted
-    audioSource.setVolume(muted ? 0 : BASE_VOLUME)
+    if (playbackStarted) refreshMix(MUTE_FADE_SECONDS)
     return muted
-}
-
-const applyTrack = (buffer) => {
-    const wasPlaying = audioSource.isPlaying
-    if (wasPlaying) audioSource.stop()
-    audioSource.setBuffer(buffer)
-    if (wasPlaying && startRequested) audioSource.play()
-}
-
-export const nextTrack = async () => {
-    currentTrackIndex = (currentTrackIndex + 1) % TRACKS.length
-    const url = TRACKS[currentTrackIndex]
-
-    if (bufferCache.has(url)) {
-        applyTrack(bufferCache.get(url))
-        return
-    }
-
-    try {
-        const buffer = await audioLoader.loadAsync(url)
-        bufferCache.set(url, buffer)
-        applyTrack(buffer)
-    } catch (error) {
-        console.error(`Failed to load track ${url}:`, error)
-    }
 }
