@@ -29,7 +29,7 @@ const groundTextures = [
 ]
 
 groundTextures.forEach((texture) => {
-    texture.repeat.set(48, 48)
+    texture.repeat.set(10, 10)
     texture.wrapS = THREE.RepeatWrapping
     texture.wrapT = THREE.RepeatWrapping
 })
@@ -38,7 +38,7 @@ groundTextures.forEach((texture) => {
  * Floor
  */
 const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(100, 100, 64, 64),
+    new THREE.PlaneGeometry(100, 100, 128, 128),
     new THREE.MeshStandardMaterial({
         color: CONFIG.theme.floorColor,
         map: groundColorTexture,
@@ -53,7 +53,7 @@ const floor = new THREE.Mesh(
         normalMap: groundNormalTexture,
         // Tile relief from the heightmap; needs dense geometry segments above
         displacementMap: groundDisplacementTexture,
-        displacementScale: 0.12,
+        displacementScale: 0.35,
         normalScale: new THREE.Vector2(0.8, 0.8),
         // Soft galaxy sheen via the PMREM room environment below
         envMapIntensity: 0.3,
