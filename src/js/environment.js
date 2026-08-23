@@ -2,6 +2,8 @@ import * as THREE from 'three'
 import { scene } from './scene.js'
 import { textureLoader } from './loaders.js'
 import { gui } from './debug-gui.js'
+import { renderer } from './renderer.js'
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import { CONFIG } from './config.js'
 
 /**
@@ -12,11 +14,19 @@ const groundARMTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_ti
 const groundNormalTexture = textureLoader.load(
     '/floor/stone_tiles_1k/avif/stone_tiles_nor_gl_1k.avif',
 )
+const groundDisplacementTexture = textureLoader.load(
+    '/floor/stone_tiles_1k/avif/stone_tiles_disp_1k.avif',
+)
 const groundAlphaTexture = textureLoader.load('/floor/floorAlpha.webp')
 
 groundColorTexture.colorSpace = THREE.SRGBColorSpace
 
-const groundTextures = [groundColorTexture, groundARMTexture, groundNormalTexture]
+const groundTextures = [
+    groundColorTexture,
+    groundARMTexture,
+    groundNormalTexture,
+    groundDisplacementTexture,
+]
 
 groundTextures.forEach((texture) => {
     texture.repeat.set(48, 48)
@@ -28,7 +38,7 @@ groundTextures.forEach((texture) => {
  * Floor
  */
 const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(100, 100, 10, 10),
+    new THREE.PlaneGeometry(100, 100, 64, 64),
     new THREE.MeshStandardMaterial({
         color: CONFIG.theme.floorColor,
         map: groundColorTexture,
@@ -41,8 +51,19 @@ const floor = new THREE.Mesh(
         // paint over them at certain viewing angles.
         alphaTest: 0.45,
         normalMap: groundNormalTexture,
+        // Tile relief from the heightmap; needs dense geometry segments above
+        displacementMap: groundDisplacementTexture,
+        displacementScale: 0.12,
+        normalScale: new THREE.Vector2(0.8, 0.8),
+        // Soft galaxy sheen via the PMREM room environment below
+        envMapIntensity: 0.3,
     }),
 )
+// Environment map gives standard materials soft reflections
+const pmremGenerator = new THREE.PMREMGenerator(renderer)
+scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture
+pmremGenerator.dispose()
+
 floor.receiveShadow = true
 floor.rotation.x = -Math.PI * 0.5
 scene.add(floor)
