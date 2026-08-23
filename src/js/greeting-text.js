@@ -5,9 +5,11 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
 import { scene } from './scene.js'
 import { world, objectsToUpdate } from './physics.js'
 import { directionalLight } from './environment.js'
+import { registerAssets, markAssetLoaded } from './loading.js'
 
 const fontLoader = new FontLoader()
 
+registerAssets(1)
 fontLoader.load(
     '/fonts/helvetiker_regular.typeface.json',
     (font) => {
@@ -81,6 +83,7 @@ fontLoader.load(
             obj.mesh.position.x += centerOffsetX
             obj.body.position.x += centerOffsetX
         })
+        markAssetLoaded()
 
         // Widen the shadow frustum to cover the full greeting row
         const shadowCamera = directionalLight.shadow.camera
@@ -94,5 +97,6 @@ fontLoader.load(
     undefined,
     (error) => {
         console.error('An error occurred: ', error)
+        markAssetLoaded()
     },
 )

@@ -37,12 +37,29 @@ body {
     opacity: 0;
     pointer-events: none;
 }
-
-.start-title {
+.start-title
+{
     margin: 0;
     font-size: 28px;
     letter-spacing: 4px;
     text-transform: uppercase;
+}
+
+.progress-track
+{
+    width: min(320px, 70vw);
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress-fill
+{
+    width: 0%;
+    height: 100%;
+    background: #ffffff;
+    transition: width 0.3s ease;
 }
 
 #start-button {
@@ -55,7 +72,13 @@ body {
     cursor: pointer;
     transition: background 0.2s ease;
 }
-
-#start-button:hover {
+#start-button:hover
+{
     background: rgba(255, 255, 255, 0.15);
+}
+
+#start-button:disabled
+{
+    opacity: 0.5;
+    cursor: wait;
 }

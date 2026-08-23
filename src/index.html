@@ -9,10 +9,13 @@
     </head>
     <body>
         <canvas class="webgl"></canvas>
-        <div id="start-screen">
-            <p class="start-title">apple3js</p>
-            <button id="start-button">Click to begin</button>
+    <div id="start-screen">
+        <p class="start-title">apple3js</p>
+        <div class="progress-track">
+            <div class="progress-fill" id="progress-fill"></div>
         </div>
+        <button id="start-button" disabled>Loading…</button>
+    </div>
         <script type="module" src="./script.js"></script>
     </body>
 </html>

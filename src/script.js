@@ -11,6 +11,7 @@ import './js/environment.js'
 import './js/greeting-text.js'
 import { updateGallery } from './js/gallery.js'
 import { requestAudioStart, attachAudioListener } from './js/sounds.js'
+import { onLoadProgress } from './js/loading.js'
 
 // Add audioListener to camera
 attachAudioListener(camera)
@@ -19,8 +20,20 @@ attachAudioListener(camera)
  * Start screen
  */
 const startScreen = document.querySelector('#start-screen')
+const startButton = document.querySelector('#start-button')
+const progressFill = document.querySelector('#progress-fill')
 
-document.querySelector('#start-button').addEventListener('click', () => {
+onLoadProgress(({ loaded, total }) => {
+    const percent = total === 0 ? 0 : Math.round((loaded / total) * 100)
+    progressFill.style.width = `${percent}%`
+
+    if (loaded >= total) {
+        startButton.disabled = false
+        startButton.textContent = 'Click to begin'
+    }
+})
+
+startButton.addEventListener('click', () => {
     requestAudioStart()
     startScreen.classList.add('hidden')
 })
