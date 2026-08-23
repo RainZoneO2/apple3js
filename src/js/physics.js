@@ -36,14 +36,12 @@ floorBody.quaternion.setFromAxisAngle(
 
 world.addBody(floorBody)
 
-// Camera collider body follows the camera each frame
+// Camera collider follows the camera each frame. Kinematic so it ignores
+// gravity/forces but still pushes dynamic bodies and reports contacts.
 export const cameraBody = new CANNON.Body({
+    type: CANNON.Body.KINEMATIC,
     position: new CANNON.Vec3(0, 5, 0),
     shape: new CANNON.Box(new CANNON.Vec3(0.4, 0.4, 0.4)),
-    linearDamping: 0,
-    angularDamping: 0,
-
-    mass: 0.1
 })
 world.addBody(cameraBody)
 
@@ -54,7 +52,7 @@ export const moveCameraCollider = (camera) => {
     // Set the body position directly
     cameraBody.position.copy(camera.position);
 
-    // Optional: Set velocity to zero to avoid unintended movements
+    // Keep velocity zero to avoid unintended movements
     cameraBody.velocity.set(0, 0, 0);
     cameraBody.angularVelocity.set(0, 0, 0);
 }

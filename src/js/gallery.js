@@ -64,6 +64,22 @@ const loadMemoryTextures = async () => {
     generateMemoryPanels()
 }
 
+// Only one memory is shown at a time; cannon-es fires 'collide' on every
+// step while overlapping, so state guards keep the tweens from churning.
+let activePanelIndex = -1
+
+const showPanel = (index) => {
+    if (activePanelIndex === index) return
+    activePanelIndex = index
+    updateSpriteMaterial(index)
+}
+
+const hidePanel = () => {
+    if (activePanelIndex === -1) return
+    activePanelIndex = -1
+    updateSpriteMaterial(-1)
+}
+
 const generateMemoryPanels = () => {
     // Calculate number of rows and columns based on length of memoryTextures
     const numColumns = Math.ceil(Math.sqrt(memoryTextures.length))
@@ -114,10 +130,7 @@ const generateMemoryPanels = () => {
         world.addBody(triggerBody)
 
         triggerBody.addEventListener('collide', (event) => {
-            if (event.body === cameraBody) {
-                movePanel(index, 1)
-                console.log('test')
-            }
+            if (event.body === cameraBody) showPanel(index)
         })
 
         planeObjects.push({
@@ -135,10 +148,12 @@ world.addEventListener('endContact', (event) => {
     if (bodyA === cameraBody || bodyB === cameraBody) {
         const otherBody = bodyA === cameraBody ? bodyB : bodyA
         const planeObject = planeObjects.find((obj) => obj.body === otherBody)
-        if (planeObject) {
-            const planeIndex = planeObjects.indexOf(planeObject)
-            movePanel(planeIndex, 0)
-        }
+        if (!planeObject) return
+
+        // Only hide if the panel being left is the one currently shown,
+        // so a late endContact can't dismiss a panel just entered.
+        const planeIndex = planeObjects.indexOf(planeObject)
+        if (planeIndex === activePanelIndex) hidePanel()
     }
 })
 
@@ -153,22 +168,14 @@ const cameraDirection = new THREE.Vector3()
 const distanceFromCamera = 2 // Distance from the camera
 let newPosition
 
-let currentTextureIndex = -1
-let currentAnimation = null
-
 const updateSpriteMaterial = (textureIndex) => {
-    if (currentAnimation) {
-        gsap.killTweensOf(sprite.scale)
-        gsap.killTweensOf(sprite)
-    }
-
-    currentTextureIndex = textureIndex
+    gsap.killTweensOf(sprite.scale)
 
     if (textureIndex === -1) {
-        currentAnimation = gsap.to(sprite.scale, { duration: 0.5, x:0, y:0, z: 0, onComplete: () => sprite.visible = false})
+        gsap.to(sprite.scale, { duration: 0.5, x: 0, y: 0, z: 0, onComplete: () => sprite.visible = false })
     } else {
         sprite.visible = true
-        currentAnimation = gsap.to(sprite.scale, {duration: 0.5, x:3, y:3, z: 3, onStart: () => {
+        gsap.to(sprite.scale, { duration: 0.5, x: 3, y: 3, z: 3, onStart: () => {
             sprite.material.map = memoryTextures[textureIndex];
             sprite.material.needsUpdate = true;
         }})
@@ -183,14 +190,6 @@ const updateSpritePosition = (camera) => {
 
     // Update the sprite's position
     sprite.position.copy(newPosition)
-}
-
-const movePanel = (index, directionFlag) => {
-    if (directionFlag === 1) {
-        updateSpriteMaterial(index)
-    } else if (directionFlag === 0) {
-        updateSpriteMaterial(-1)
-    }
 }
 
 loadMemoryTextures()
