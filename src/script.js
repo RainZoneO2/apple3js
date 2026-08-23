@@ -94,7 +94,7 @@ const tryPlayAudio = () => {
     audioSource.play()
 }
 
-audioLoader.load('sounds/the_love_cycle.mp3', function(buffer) {
+audioLoader.load('/sounds/the_love_cycle.mp3', function(buffer) {
     audioSource.setBuffer(buffer)
     audioSource.setLoop(true)
     audioSource.setVolume(0.5)
@@ -118,7 +118,7 @@ const groundColorTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_
 const groundARMTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_arm_1k.avif')
 const groundNormalTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_nor_gl_1k.avif')
 const groundDisplacementTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_disp_1k.avif')
-const groundAlphaTexture = textureLoader.load('floor/floorAlpha.webp')
+const groundAlphaTexture = textureLoader.load('/floor/floorAlpha.webp')
 
 groundColorTexture.colorSpace = THREE.SRGBColorSpace
 
@@ -139,11 +139,11 @@ groundDisplacementTexture.wrapT = THREE.RepeatWrapping
 
 
 // Memories - Images
-const memoryAlphaTexture = textureLoader.load('memories/memoryAlpha.webp')
+const memoryAlphaTexture = textureLoader.load('/memories/memoryAlpha.webp')
 
 const memoryTextures = []
 
-const memoryFolderPath = 'memories/textures/webp/'
+const memoryFolderPrefix = 'memories/textures/webp/'
 const manifestUrl = '/manifest.json'
 
 const revealScene = () => {
@@ -156,7 +156,7 @@ const loadMemoryTextures = async () => {
     try {
         const response = await fetch(manifestUrl)
         const imageFiles = await response.json()
-        galleryFiles = imageFiles.filter(file => file.startsWith(memoryFolderPath))
+        galleryFiles = imageFiles.filter(file => file.startsWith(memoryFolderPrefix))
     } catch (error) {
         console.error('Error fetching manifest:', error)
         revealScene()
@@ -164,14 +164,14 @@ const loadMemoryTextures = async () => {
     }
 
     if (galleryFiles.length === 0) {
-        console.warn(`No images found in target folder: ${memoryFolderPath}`)
+        console.warn(`No images found in folder: ${memoryFolderPrefix}`)
         revealScene()
         return
     }
 
     // Load in manifest order so panel indexes stay stable; one failure must not block the scene
     const results = await Promise.allSettled(
-        galleryFiles.map(file => textureLoader.loadAsync(file))
+        galleryFiles.map(file => textureLoader.loadAsync(`/${file}`))
     )
 
     results.forEach((result, index) => {
@@ -245,7 +245,7 @@ world.addBody(floorBody)
 const fontLoader = new FontLoader()
 
 fontLoader.load(
-    'fonts/helvetiker_regular.typeface.json',
+    '/fonts/helvetiker_regular.typeface.json',
     (font) => {
         const text = 'HAPPY BIRTHDAY , ZHANYM'
 
