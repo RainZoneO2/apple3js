@@ -1,6 +1,6 @@
 # apple3js
 
-**apple3js** is an immersive 3D gallery web experience built with Three.js. It allows you to showcase images in a dynamic and interactive 3D environment.
+**apple3js** is an immersive 3D gallery web experience built with Three.js. You play as an apple hopping around a floating orchard island under a galaxy sky, where your memories hang like glowing fruit.
 
 ## Installation
 
@@ -52,16 +52,25 @@ Your application will be available at `http://localhost:4173` by default.
 
 ### Playing around in the gallery
 
-Click the start button to enter and start the music.
-To pan around the gallery hold `LEFT_CLICK` and move your mouse.
-To zoom in/out, use the `SCROLL_WHEEL`.
-When your camera is close enough to a memory, it will expand as a card.
-Click a memory to view it fullscreen; close with `Esc`, the backdrop, or `Close`.
-Press `F` or `SPACE` to throw an apple.
-Use `Start tour` (bottom left) to glide between memories automatically.
-Share a direct link to any memory — opening it flies there on entry (e.g. `#memory-0`).
+Click the start button to enter and start the music. You are the apple.
+
+- `W`/`A`/`S`/`D` (or arrow keys) roll around the island
+- `SPACE` hops - bunny-style, with squash and stretch
+- Drag the mouse to orbit the camera; scroll wheel zooms
+- Get close to a hanging memory and it expands as a card
+- Click a card to view it fullscreen; close with `Esc`, the backdrop, or `Close`
+- `F` throws an apple; the greeting letters are knockable bowling pins
+- `Start tour` hops you between memories automatically
+- Share a direct link to any memory — opening it teleports you there (e.g. `#memory-0`)
 
 ### Atmosphere & music
+
+#### Graphics & sound settings
+
+Quality presets (`Low` / `Medium` / `High`) and a volume slider live in the
+top-right HUD and persist between visits. Low disables shadows and caps the
+render resolution for weaker devices; High adds tree shadows with a larger
+shadow map.
 
 The gallery sits under a permanent procedural night sky — nebula clouds, a
 milky-way band, and twinkling stars rendered by a custom shader (`galaxy-sky.js`),
