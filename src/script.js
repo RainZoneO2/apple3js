@@ -25,6 +25,7 @@ import {
     unfocusPanel,
 } from './js/gallery.js'
 import { throwApple } from './js/apples.js'
+import { updatePlayer } from './js/player.js'
 import { flyToPanel, startTour, stopTour, isTourActive } from './js/tour.js'
 import { openMemory, currentHashMemory } from './js/modal.js'
 import { updateGalaxySky } from './js/galaxy-sky.js'
@@ -133,6 +134,9 @@ const tick = () => {
 
     syncMeshes()
 
+    // Drive the player avatar (after syncMeshes so squash/stretch applies on top)
+    updatePlayer(deltaTime)
+
     // Update camera body
     moveCameraCollider(camera)
 
@@ -157,7 +161,7 @@ const tick = () => {
 let lastThrowTime = 0
 
 window.addEventListener('keydown', (event) => {
-    if (event.code !== 'KeyF' && event.code !== 'Space') return
+    if (event.code !== 'KeyF') return
     event.preventDefault()
 
     const now = performance.now()

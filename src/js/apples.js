@@ -12,23 +12,24 @@ import { gui } from './debug-gui.js'
 const MAX_APPLES = 25
 const THROW_SPEED = 9
 
-// Procedural low-poly apple (the GLB models were removed during cleanup)
-const appleGeometry = new THREE.SphereGeometry(0.35, 16, 12)
-appleGeometry.scale(1, 0.88, 1)
-const stemGeometry = new THREE.CylinderGeometry(0.04, 0.05, 0.22, 6)
-
+// Procedural low-poly apple (the GLB models were removed during cleanup),
+// sized by radius so both thrown apples and the player avatar share one recipe
 const appleMaterial = new THREE.MeshStandardMaterial({ color: '#c0392b', roughness: 0.5 })
 const stemMaterial = new THREE.MeshStandardMaterial({ color: '#6b4423', roughness: 0.9 })
 
 const apples = []
 const throwDirection = new THREE.Vector3()
 
-const createAppleMesh = () => {
+export const createAppleMesh = (radius = 0.35) => {
+    const bodyGeometry = new THREE.SphereGeometry(radius, 16, 12)
+    bodyGeometry.scale(1, 0.88, 1)
+    const stemGeometry = new THREE.CylinderGeometry(radius * 0.11, radius * 0.14, radius * 0.63, 6)
+
     const group = new THREE.Group()
-    const body = new THREE.Mesh(appleGeometry, appleMaterial)
+    const body = new THREE.Mesh(bodyGeometry, appleMaterial)
     body.castShadow = true
     const stem = new THREE.Mesh(stemGeometry, stemMaterial)
-    stem.position.y = 0.33
+    stem.position.y = radius * 0.94
     stem.rotation.z = 0.15
     group.add(body, stem)
     return group

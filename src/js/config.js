@@ -22,6 +22,12 @@ export const CONFIG = {
         proximityExit: 5.5,
     },
 
+    player: {
+        radius: 0.55,
+        moveSpeed: 7,
+        hopSpeed: 7.5,
+    },
+
     audio: {
         volume: 0.5,
         // Level of the guitar arrangement while a memory card is open (0..1
