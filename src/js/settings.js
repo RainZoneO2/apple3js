@@ -81,6 +81,8 @@ qualityButtons.forEach((button) => {
         localStorage.setItem(QUALITY_KEY, currentQuality)
         applyQuality(currentQuality)
         markActiveButton()
+        // Release focus so Space/arrows keep driving the player, not the HUD
+        button.blur()
     })
 })
 
@@ -88,4 +90,8 @@ volumeSlider.addEventListener('input', () => {
     const value = Number(volumeSlider.value)
     setVolume(value / 100)
     localStorage.setItem(VOLUME_KEY, String(value))
+})
+
+volumeSlider.addEventListener('change', () => {
+    volumeSlider.blur()
 })

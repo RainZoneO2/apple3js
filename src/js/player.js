@@ -29,6 +29,9 @@ const playerBody = new CANNON.Body({
     angularDamping: 0.3,
 })
 playerBody.collisionFilterGroup = 2
+// A sleeping body ignores velocity writes - input would silently stop working
+// whenever the apple rested for a moment. Keep it awake forever.
+playerBody.allowSleep = false
 world.addBody(playerBody)
 objectsToUpdate.push({ mesh: playerMesh, body: playerBody })
 
@@ -103,9 +106,6 @@ const rightAxis = new THREE.Vector3()
 const wishDir = new THREE.Vector3()
 const upVector = new THREE.Vector3(0, 1, 0)
 
-let wasAirborne = false
-let squashRecover = 0
-
 export const updatePlayer = (deltaTime) => {
     // Camera-relative move axes (yaw only)
     camera.getWorldDirection(forwardAxis)
@@ -135,21 +135,6 @@ export const updatePlayer = (deltaTime) => {
         hopQueuedAt = -Infinity
     }
 
-    // Squash & stretch
-    const airborne = !grounded || Math.abs(velocity.y) > 1.5
-    if (!airborne && wasAirborne) squashRecover = 0.14
-    wasAirborne = airborne
-
-    let scaleY = 1
-    if (squashRecover > 0) {
-        squashRecover -= deltaTime
-        scaleY = 0.74 // landing squish
-    } else if (airborne) {
-        scaleY = THREE.MathUtils.clamp(1 + velocity.y * 0.03, 0.85, 1.28)
-    }
-    const scaleXZ = 1 / Math.sqrt(scaleY)
-    playerMesh.scale.set(scaleXZ, scaleY, scaleXZ)
-
     // Safety net: nothing should get past the island rim, but just in case
     if (playerBody.position.y < -25) teleportPlayer(0, 9)
 }
@@ -163,6 +148,7 @@ export const teleportPlayer = (x, z, y = 2.5) => {
     playerBody.position.set(x, y, z)
     playerBody.velocity.set(0, 0, 0)
     playerBody.angularVelocity.set(0, 0, 0)
+    playerBody.wakeUp()
 }
 
 if (gui) {

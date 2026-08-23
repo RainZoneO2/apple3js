@@ -59,6 +59,9 @@ canvas.addEventListener('pointerdown', (event) => {
     dragging = true
     lastX = event.clientX
     lastY = event.clientY
+
+    // Drop lingering HUD focus so keys always steer the player
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
 })
 
 window.addEventListener('pointermove', (event) => {
