@@ -52,10 +52,14 @@ Your application will be available at `http://localhost:4173` by default.
 
 ### Playing around in the gallery
 
-Click anywhere to enter and start the music.
+Click the start button to enter and start the music.
 To pan around the gallery hold `LEFT_CLICK` and move your mouse.
 To zoom in/out, use the `SCROLL_WHEEL`.
 When your camera is close enough to a memory, it will expand as a card.
+Click a memory to view it fullscreen; close with `Esc`, the backdrop, or `Close`.
+Press `F` or `SPACE` to throw an apple.
+Use `Start tour` (bottom left) to glide between memories automatically.
+Share a direct link to any memory — opening it flies there on entry (e.g. `#memory-0`).
 
 ## Project Structure
 
@@ -70,6 +74,15 @@ Two Node scripts run automatically before `dev` and `build`:
 
 - `process-images.js` converts everything in `to-process/` to 1000x1000 WebP (`npm run process-images`), moving originals into `processed/`.
 - `generate-manifest.js` writes `static/manifest.json` listing the gallery textures, which the app fetches at runtime (`npm run generate-manifest`).
+
+## Customizing
+
+- **Content & theme**: edit `src/js/config.js` (title, greeting text, fog/floor colors, light intensities, sky defaults, gallery layout).
+- **Captions**: add entries per image file name in `static/memories/metadata.json`:
+
+  ```json
+  { "my-photo.webp": { "title": "Summer 2024", "date": "August 2024" } }
+  ```
 
 ## Contributing
 
