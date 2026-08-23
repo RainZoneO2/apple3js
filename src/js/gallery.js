@@ -6,6 +6,7 @@ import { registerAssets, markAssetLoaded } from './loading.js'
 import { CONFIG } from './config.js'
 import { openMemory, isModalOpen } from './modal.js'
 import { setMemoryDucked } from './sounds.js'
+import { getPlayerPosition } from './player.js'
 
 /**
  * Memories - Images
@@ -215,16 +216,19 @@ export const updateGallery = (camera) => {
 
     updateSpritePosition(camera)
 
-    // Distance-based proximity: nearest panel within the enter radius expands;
-    // the open card only collapses once the camera leaves its larger exit radius.
+    // Distance-based proximity measured from the player apple: nearest panel
+    // within the enter radius expands; the open card only collapses once the
+    // apple leaves its larger exit radius.
     if (planeObjects.length === 0) return
+
+    const playerPosition = getPlayerPosition()
 
     if (activePanelIndex === -1) {
         let nearestIndex = -1
         let nearestDistance = Infinity
 
         planeObjects.forEach((obj, index) => {
-            const distance = camera.position.distanceTo(obj.mesh.position)
+            const distance = playerPosition.distanceTo(obj.mesh.position)
             if (distance < nearestDistance) {
                 nearestDistance = distance
                 nearestIndex = index
@@ -236,7 +240,7 @@ export const updateGallery = (camera) => {
         }
     } else {
         const activeMesh = planeObjects[activePanelIndex].mesh
-        if (camera.position.distanceTo(activeMesh.position) > CONFIG.gallery.proximityExit) {
+        if (playerPosition.distanceTo(activeMesh.position) > CONFIG.gallery.proximityExit) {
             hidePanel()
         }
     }

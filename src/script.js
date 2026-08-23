@@ -3,8 +3,8 @@ import './js/loaders.js'
 import './js/scene.js'
 import { sizes } from './js/sizes.js'
 import { canvas, updateRendererSize } from './js/renderer.js'
-import { camera, controls, updateCameraAspect } from './js/camera.js'
-import { stepWorld, syncMeshes, moveCameraCollider } from './js/physics.js'
+import { camera, updateCameraAspect, updateCameraRig } from './js/camera.js'
+import { stepWorld, syncMeshes } from './js/physics.js'
 import { updatePhysicsDebugger } from './js/debug-gui.js'
 import './js/environment.js'
 import './js/greeting-text.js'
@@ -25,7 +25,7 @@ import {
     unfocusPanel,
 } from './js/gallery.js'
 import { throwApple } from './js/apples.js'
-import { updatePlayer } from './js/player.js'
+import { updatePlayer, getPlayerPosition } from './js/player.js'
 import { flyToPanel, startTour, stopTour, isTourActive } from './js/tour.js'
 import { openMemory, currentHashMemory } from './js/modal.js'
 import { updateGalaxySky } from './js/galaxy-sky.js'
@@ -137,14 +137,11 @@ const tick = () => {
     // Drive the player avatar (after syncMeshes so squash/stretch applies on top)
     updatePlayer(deltaTime)
 
-    // Update camera body
-    moveCameraCollider(camera)
+    // Spring-arm follow camera orbits the apple
+    updateCameraRig(getPlayerPosition(), deltaTime)
 
     // Update cannonDebugger
     updatePhysicsDebugger()
-
-    // Update controls
-    controls.update()
 
     // Render
     updateGalaxySky(elapsedTime)

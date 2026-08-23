@@ -1,42 +1,25 @@
 import * as THREE from 'three'
-import { gsap } from 'gsap'
-import { camera, controls } from './camera.js'
+import { setCameraYaw } from './camera.js'
+import { teleportPlayer } from './player.js'
 
 /**
- * Camera flights for deep links and the auto-tour.
+ * Deep links and the auto-tour: move the apple next to a panel and aim the
+ * follow camera so it frames apple + panel from the center-facing side.
  */
-const VIEW_DISTANCE = 9
+const STANDOFF = 5
 const TOUR_STEP_MS = 6000
 
 const centerPoint = new THREE.Vector3(0, 2, 0)
 const toCenter = new THREE.Vector3()
-const viewPosition = new THREE.Vector3()
+const standPoint = new THREE.Vector3()
 
 export const flyToPanel = (position) => {
-    gsap.killTweensOf(camera.position)
-    gsap.killTweensOf(controls.target)
-
-    // Stand back from the panel, on the side facing the scene center
     toCenter.subVectors(centerPoint, position).setY(0).normalize()
-    viewPosition.copy(position).addScaledVector(toCenter, VIEW_DISTANCE)
-    viewPosition.y = Math.max(viewPosition.y, 4)
+    standPoint.copy(position).addScaledVector(toCenter, STANDOFF)
 
-    gsap.to(camera.position, {
-        x: viewPosition.x,
-        y: viewPosition.y,
-        z: viewPosition.z,
-        duration: 1.6,
-        ease: 'power2.inOut',
-        onUpdate: () => controls.update(),
-    })
-    gsap.to(controls.target, {
-        x: position.x,
-        y: position.y,
-        z: position.z,
-        duration: 1.6,
-        ease: 'power2.inOut',
-        onUpdate: () => controls.update(),
-    })
+    teleportPlayer(standPoint.x, standPoint.z)
+    // Rig offset points away from the panel so both stay in frame
+    setCameraYaw(Math.atan2(standPoint.x - position.x, standPoint.z - position.z))
 }
 
 /**
