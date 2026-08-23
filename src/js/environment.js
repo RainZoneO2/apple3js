@@ -101,7 +101,7 @@ const floor = new THREE.Mesh(
         displacementScale: 0.35,
         normalScale: new THREE.Vector2(0.8, 0.8),
         // Soft galaxy sheen via the PMREM room environment below
-        envMapIntensity: 0.3,
+        envMapIntensity: 0.18,
     }),
 )
 // Environment map gives standard materials soft reflections

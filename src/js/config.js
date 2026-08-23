@@ -44,13 +44,13 @@ export const CONFIG = {
     },
 
     theme: {
-        toneMappingExposure: 1.25,
+        toneMappingExposure: 1.12,
         fogColor: '#150a20',
         fogDensity: 0.02,
         floorColor: '#324c8c',
         ambientIntensity: 0.7,
         directionalColor: '#8fa3ff',
-        directionalIntensity: 0.6,
+        directionalIntensity: 0.38,
     },
 
     galaxy: {

@@ -38,7 +38,7 @@ const fruitGeometry = new THREE.SphereGeometry(0.16, 10, 8)
 const fruitMaterial = new THREE.MeshStandardMaterial({
     color: '#c0392b',
     emissive: '#a83226',
-    emissiveIntensity: 0.55,
+    emissiveIntensity: 0.95,
     roughness: 0.6,
 })
 
@@ -60,6 +60,7 @@ const createTree = () => {
     tree.add(trunk)
 
     const canopy = new THREE.Group()
+    const blobs = []
     for (let i = 0; i < 3; i++) {
         const blob = new THREE.Mesh(canopyGeometry, canopyMaterial)
         blob.position.set((rng() - 0.5) * 1.4, 2.5 + rng() * 1.1, (rng() - 0.5) * 1.4)
@@ -67,18 +68,20 @@ const createTree = () => {
         blob.castShadow = true
         shadowMeshes.push(blob)
         canopy.add(blob)
+        blobs.push(blob)
     }
 
+    // Fruit hangs FROM the canopy: each one is parented to a specific blob
+    // just under its surface, inheriting that blob's scale and offset.
+    const fruitDir = new THREE.Vector3()
     const fruitCount = 4 + Math.floor(rng() * 3)
     for (let i = 0; i < fruitCount; i++) {
         const fruit = new THREE.Mesh(fruitGeometry, fruitMaterial)
-        const angle = rng() * Math.PI * 2
-        fruit.position.set(
-            Math.sin(angle) * (1.2 + rng() * 0.5),
-            2.4 + rng() * 1.4,
-            Math.cos(angle) * (1.2 + rng() * 0.5),
-        )
-        canopy.add(fruit)
+        const host = blobs[Math.floor(rng() * blobs.length)]
+        // Bias toward the underside of the canopy where fruit would hang
+        fruitDir.set(rng() - 0.5, -(rng() * 0.8), rng() - 0.5).normalize()
+        fruit.position.copy(fruitDir.multiplyScalar(0.95))
+        host.add(fruit)
     }
 
     tree.add(canopy)
@@ -112,7 +115,7 @@ const createTree = () => {
  * Grass: one instanced mesh of scattered blades across the island
  */
 {
-    const GRASS_COUNT = 700
+    const GRASS_COUNT = 2600
     const bladeGeometry = new THREE.ConeGeometry(0.05, 0.55, 4)
     bladeGeometry.translate(0, 0.27, 0)
     const grassMaterial = new THREE.MeshStandardMaterial({ color: '#31503a', roughness: 1 })
@@ -126,8 +129,8 @@ const createTree = () => {
     for (let i = 0; i < GRASS_COUNT; i++) {
         const angle = rng() * Math.PI * 2
         // Uniform disc sampling; thin out inside the greeting-text circle
-        const radius = Math.sqrt(rng()) * 38
-        if (radius < 9 && rng() < 0.75) {
+        const radius = Math.sqrt(rng()) * 40
+        if (radius < 8 && rng() < 0.85) {
             matrix.makeScale(0, 0, 0) // hide the blade under the floor
         } else {
             euler.set((rng() - 0.5) * 0.35, rng() * Math.PI * 2, (rng() - 0.5) * 0.35)
