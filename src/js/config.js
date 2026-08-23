@@ -24,6 +24,9 @@ export const CONFIG = {
 
     audio: {
         volume: 0.5,
+        // Level of the guitar arrangement while a memory card is open (0..1
+        // of the master volume); slightly below full so the swap reads soft
+        guitarDuckLevel: 0.85,
     },
 
     theme: {

@@ -75,6 +75,11 @@ const tryStartPlayback = () => {
     mainAudio.setBuffer(buffers.main)
     guitarAudio.setBuffer(buffers.guitar)
 
+    // Identical lengths mean both sources loop at the same instant forever,
+    // preserving the lockstep the crossfade relies on.
+    mainAudio.setLoop(true)
+    guitarAudio.setLoop(true)
+
     // THREE.Audio gains start at 0; set the initial mix directly so both
     // sources can be launched in the same tick and stay in lockstep.
     mainAudio.setVolume(volumeFor(mainLevel))
@@ -96,7 +101,9 @@ export const setMemoryDucked = (ducked) => {
     if (mainLevel === nextMainLevel) return
 
     mainLevel = nextMainLevel
-    guitarLevel = ducked ? 1 : 0
+    // The guitar sits a touch under the base mix so opening a card feels
+    // like a softer arrangement rather than a louder one.
+    guitarLevel = ducked ? CONFIG.audio.guitarDuckLevel : 0
 
     if (playbackStarted) refreshMix(FADE_SECONDS)
 }
