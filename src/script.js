@@ -17,6 +17,7 @@ import { composer, setComposerSize } from './js/postprocessing.js'
 import { updateAtmosphere } from './js/atmosphere.js'
 import { initModal } from './js/modal.js'
 import { initGalleryInteraction } from './js/gallery.js'
+import { throwApple } from './js/apples.js'
 
 // Add audioListener to camera
 attachAudioListener(camera)
@@ -110,5 +111,21 @@ const tick = () => {
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
 }
+
+/**
+ * Throw apples
+ */
+let lastThrowTime = 0
+
+window.addEventListener('keydown', (event) => {
+    if (event.code !== 'KeyF' && event.code !== 'Space') return
+    event.preventDefault()
+
+    const now = performance.now()
+    if (now - lastThrowTime < 150) return
+    lastThrowTime = now
+
+    throwApple()
+})
 
 tick()
