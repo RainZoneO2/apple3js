@@ -5,6 +5,7 @@ import { gui } from './debug-gui.js'
 import { renderer } from './renderer.js'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import { CONFIG } from './config.js'
+import { ISLAND_RADIUS } from './physics.js'
 
 /**
  * Ground textures
@@ -35,10 +36,52 @@ groundTextures.forEach((texture) => {
 })
 
 /**
- * Floor
+ * Floor - a sculpted floating island
  */
+const FALLOFF_START = ISLAND_RADIUS - 8 // stay drooping inside the alpha fade
+const DROOP_DEPTH = 9
+
+const floorGeometry = new THREE.PlaneGeometry(100, 100, 128, 128)
+{
+    const position = floorGeometry.attributes.position
+    for (let i = 0; i < position.count; i++) {
+        const x = position.getX(i)
+        const y = position.getY(i)
+        const radius = Math.hypot(x, y)
+
+        let z = position.getZ(i)
+
+        // Gentle low-frequency undulation so the interior is not a perfect plane
+        z +=
+            Math.sin(x * 0.11 + 1.7) * 0.22 +
+            Math.cos(y * 0.13 + 0.6) * 0.18 +
+            Math.sin((x + y) * 0.07) * 0.12
+
+        // Curl the rim downward past the falloff start for a chunk silhouette
+        if (radius > FALLOFF_START) {
+            const t = Math.min((radius - FALLOFF_START) / (50 - FALLOFF_START), 1)
+            const eased = t * t * (3 - 2 * t)
+            z -= DROOP_DEPTH * eased * eased
+        }
+
+        position.setZ(i, z)
+    }
+    floorGeometry.computeVertexNormals()
+}
+
+// Rock underside giving the island visible thickness below the droop
+const underRock = new THREE.Mesh(
+    new THREE.ConeGeometry(FALLOFF_START + 2, 14, 48, 1, true),
+    new THREE.MeshStandardMaterial({ color: '#221731', roughness: 1 }),
+)
+underRock.rotation.x = Math.PI
+// After flipping, the cone's wide base ring sits at +h/2; sink it so the
+// ring hides just under the floor and the tip hangs 14 units below.
+underRock.position.y = -14 / 2 + 0.05
+scene.add(underRock)
+
 const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(100, 100, 128, 128),
+    floorGeometry,
     new THREE.MeshStandardMaterial({
         color: CONFIG.theme.floorColor,
         map: groundColorTexture,

@@ -19,14 +19,37 @@ const defaultContactMaterial = new CANNON.ContactMaterial(defaultMaterial, defau
 world.addContactMaterial(defaultContactMaterial)
 world.defaultContactMaterial = defaultContactMaterial
 
-// Floor
-const floorShape = new CANNON.Plane()
-const floorBody = new CANNON.Body()
-floorBody.mass = 0
-floorBody.addShape(floorShape)
-floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5)
+// The world is a floating island: a flat disc with an invisible rim so
+// nothing (player, letters, thrown apples) can hop off into space.
+export const ISLAND_RADIUS = 42
 
+// Disc floor; cannon-es cylinders are Y-aligned, sink it so the top sits at y=0
+const floorBody = new CANNON.Body({ mass: 0 })
+floorBody.addShape(new CANNON.Cylinder(ISLAND_RADIUS, ISLAND_RADIUS, 2, 24))
+floorBody.position.set(0, -1, 0)
 world.addBody(floorBody)
+
+// Rim wall: a ring of thin static boxes just outside the walkable radius
+const WALL_SEGMENTS = 16
+const WALL_HEIGHT = 4
+const WALL_THICKNESS = 1
+
+for (let i = 0; i < WALL_SEGMENTS; i++) {
+    const angle = (i / WALL_SEGMENTS) * Math.PI * 2
+    const chord = 2 * ISLAND_RADIUS * Math.tan(Math.PI / WALL_SEGMENTS)
+
+    const segment = new CANNON.Body({ mass: 0 })
+    segment.addShape(
+        new CANNON.Box(new CANNON.Vec3(chord / 2 + 0.2, WALL_HEIGHT / 2, WALL_THICKNESS / 2)),
+    )
+    segment.position.set(
+        Math.sin(angle) * ISLAND_RADIUS,
+        WALL_HEIGHT / 2,
+        Math.cos(angle) * ISLAND_RADIUS,
+    )
+    segment.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), angle)
+    world.addBody(segment)
+}
 
 // Camera collider follows the camera each frame. Kinematic so it ignores
 // gravity/forces but still pushes dynamic bodies and reports contacts.
