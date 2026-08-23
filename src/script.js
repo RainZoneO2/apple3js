@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import './js/loaders.js'
-import { scene } from './js/scene.js'
+import './js/scene.js'
 import { sizes } from './js/sizes.js'
-import { renderer, updateRendererSize } from './js/renderer.js'
+import { updateRendererSize } from './js/renderer.js'
 import { camera, controls, updateCameraAspect } from './js/camera.js'
 import { stepWorld, syncMeshes, moveCameraCollider } from './js/physics.js'
 import { updatePhysicsDebugger } from './js/debug-gui.js'
@@ -13,6 +13,8 @@ import { updateGallery } from './js/gallery.js'
 import { requestAudioStart, attachAudioListener, toggleMute, nextTrack } from './js/sounds.js'
 import { onLoadProgress } from './js/loading.js'
 import { CONFIG } from './js/config.js'
+import { composer, setComposerSize } from './js/postprocessing.js'
+import { updateAtmosphere } from './js/atmosphere.js'
 
 // Add audioListener to camera
 attachAudioListener(camera)
@@ -64,8 +66,9 @@ window.addEventListener('resize', () => {
     // Update camera
     updateCameraAspect()
 
-    // Update renderer
+    // Update renderer and post-processing
     updateRendererSize()
+    setComposerSize()
 })
 
 /**
@@ -96,7 +99,8 @@ const tick = () => {
     controls.update()
 
     // Render
-    renderer.render(scene, camera)
+    updateAtmosphere(elapsedTime)
+    composer.render()
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
