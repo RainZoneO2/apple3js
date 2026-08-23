@@ -1,34 +1,27 @@
-import * as THREE from "three"
 import GUI from "lil-gui"
 import CannonDebugger from "cannon-es-debugger"
 import { scene } from "./scene.js"
 import { world } from "./physics.js"
 
 /**
- * Debug UI. Created unconditionally for now; gated behind DEV in a follow-up.
+ * Debug tooling. Only wired up in development builds; production gets
+ * null gui and a no-op debugger update.
  */
-export const gui = new GUI()
+export let gui = null
+export let updatePhysicsDebugger = () => {}
 
-export const debugObject = {}
+if (import.meta.env.DEV) {
+    gui = new GUI()
 
-debugObject.reset = () => {
-  console.log('Dispose')
-}
-gui.add(debugObject, 'reset')
+    const debugObject = {}
 
-debugObject.physicsDebugger = false
-gui.add(debugObject, 'physicsDebugger')
+    gui.add(debugObject, 'physicsDebugger')
 
-const cannonDebugger = new CannonDebugger(scene, world, {
-    onUpdate(body, mesh) {
-        if (debugObject.physicsDebugger)
-            mesh.visible = true
-        else if (!debugObject.physicsDebugger) {
-            mesh.visible = false
+    const cannonDebugger = new CannonDebugger(scene, world, {
+        onUpdate(body, mesh) {
+            mesh.visible = debugObject.physicsDebugger
         }
-    }
-})
+    })
 
-export const updatePhysicsDebugger = () => {
-    cannonDebugger.update()
+    updatePhysicsDebugger = () => cannonDebugger.update()
 }

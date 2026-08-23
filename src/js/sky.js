@@ -31,14 +31,16 @@ function updateSun() {
     renderer.toneMappingExposure = skyEffectController.exposure
 }
 
-const skyFolder = gui.addFolder('Sky')
-skyFolder.add(skyEffectController, 'turbidity', 0.0, 20.0, 0.1).onChange(updateSun)
-skyFolder.add(skyEffectController, 'rayleigh', 0.0, 4, 0.001).onChange(updateSun)
-skyFolder.add(skyEffectController, 'mieCoefficient', 0.0, 0.1, 0.001).onChange(updateSun)
-skyFolder.add(skyEffectController, 'mieDirectionalG', 0.0, 1, 0.001).onChange(updateSun)
-skyFolder.add(skyEffectController, 'elevation', 0, 90, 0.1).onChange(updateSun)
-skyFolder.add(skyEffectController, 'azimuth', -180, 180, 0.1).onChange(updateSun)
-skyFolder.add(skyEffectController, 'exposure', 0, 2, 0.001).onChange(updateSun)
-skyFolder.close()
+const skyFolder = gui && gui.addFolder('Sky')
+if (skyFolder) {
+    skyFolder.add(skyEffectController, 'turbidity', 0.0, 20.0, 0.1).onChange(updateSun)
+    skyFolder.add(skyEffectController, 'rayleigh', 0.0, 4, 0.001).onChange(updateSun)
+    skyFolder.add(skyEffectController, 'mieCoefficient', 0.0, 0.1, 0.001).onChange(updateSun)
+    skyFolder.add(skyEffectController, 'mieDirectionalG', 0.0, 1, 0.001).onChange(updateSun)
+    skyFolder.add(skyEffectController, 'elevation', 0, 90, 0.1).onChange(updateSun)
+    skyFolder.add(skyEffectController, 'azimuth', -180, 180, 0.1).onChange(updateSun)
+    skyFolder.add(skyEffectController, 'exposure', 0, 2, 0.001).onChange(updateSun)
+    skyFolder.close()
+}
 
 updateSun()

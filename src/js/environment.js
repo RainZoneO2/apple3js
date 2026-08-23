@@ -75,7 +75,8 @@ directionalLight.shadow.camera.bottom = -7
  */
 scene.fog = new THREE.FogExp2('#871769', 0.035)
 
-const fogFolder = gui.addFolder('Fog')
-fogFolder.close()
-
-fogFolder.add(scene.fog, 'density').min(0).max(0.5).step(0.001)
+const fogFolder = gui && gui.addFolder('Fog')
+if (fogFolder) {
+    fogFolder.close()
+    fogFolder.add(scene.fog, 'density').min(0).max(0.5).step(0.001)
+}
