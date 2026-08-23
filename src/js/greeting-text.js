@@ -1,9 +1,10 @@
-import * as THREE from "three"
+import * as CANNON from 'cannon-es'
+import * as THREE from 'three'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
-import { scene } from "./scene.js"
-import { world, objectsToUpdate } from "./physics.js"
-import { directionalLight } from "./environment.js"
+import { scene } from './scene.js'
+import { world, objectsToUpdate } from './physics.js'
+import { directionalLight } from './environment.js'
 
 const fontLoader = new FontLoader()
 
@@ -37,7 +38,7 @@ fontLoader.load(
                 bevelSize: 0.02,
                 bevelThickness: 0.03,
                 bevelOffset: 0,
-                bevelSegments: 4
+                bevelSegments: 4,
             })
 
             letterGeometry.center()
@@ -56,9 +57,11 @@ fontLoader.load(
             letterMesh.position.y = letterHeight / 2 + 0.5
             scene.add(letterMesh)
 
-            const shape = new CANNON.Box(new CANNON.Vec3(letterWidth / 2, letterHeight / 2, letterDepth / 2))
+            const shape = new CANNON.Box(
+                new CANNON.Vec3(letterWidth / 2, letterHeight / 2, letterDepth / 2),
+            )
             const body = new CANNON.Body({
-                mass: 1
+                mass: 1,
             })
 
             body.addShape(shape)
@@ -67,14 +70,14 @@ fontLoader.load(
 
             objectsToUpdate.push({
                 mesh: letterMesh,
-                body: body
+                body: body,
             })
 
             offsetX += letterWidth + 0.08
         }
 
         const centerOffsetX = -totalWidth / 2
-        objectsToUpdate.forEach(obj => {
+        objectsToUpdate.forEach((obj) => {
             obj.mesh.position.x += centerOffsetX
             obj.body.position.x += centerOffsetX
         })
@@ -91,5 +94,5 @@ fontLoader.load(
     undefined,
     (error) => {
         console.error('An error occurred: ', error)
-    }
+    },
 )

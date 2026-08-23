@@ -16,7 +16,7 @@ function formatFileSize(bytes) {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
     if (bytes === 0) return '0 Byte'
     const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10)
-    return `${(bytes / (1024 ** i)).toFixed(2)} ${sizes[i]}`
+    return `${(bytes / 1024 ** i).toFixed(2)} ${sizes[i]}`
 }
 
 // Crop or resize a single image, write it out, and move the original away.
@@ -68,7 +68,9 @@ async function processFile(file, typeOutputDir) {
     const fileStats = await fs.stat(outputPath)
     const fileSize = fileStats.size
 
-    console.log(`Converted ${file} | ${formatFileSize(originalFileSize)} => ${formatFileSize(fileSize)} (Reduced by ${(100 - (fileSize / originalFileSize * 100)).toFixed(2)}%)`)
+    console.log(
+        `Converted ${file} | ${formatFileSize(originalFileSize)} => ${formatFileSize(fileSize)} (Reduced by ${(100 - (fileSize / originalFileSize) * 100).toFixed(2)}%)`,
+    )
 
     // Move original file to processedDir
     const processedFilePath = path.join(processedDir, file)
@@ -118,7 +120,7 @@ async function ensureDir(dir) {
     await fs.mkdir(dir, { recursive: true })
 }
 
-processImages().catch(err => {
+processImages().catch((err) => {
     console.error('Error during conversion:', err)
     process.exitCode = 1
 })

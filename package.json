@@ -1,26 +1,34 @@
 {
-  "name": "apple3js",
-  "private": "true",
-  "version": "0.0.1",
-  "scripts": {
-    "process-images": "node process-images.js webp",
-    "generate-manifest": "node generate-manifest.js",
-    "predev": "npm run process-images && npm run generate-manifest",
-    "dev": "vite",
-    "prebuild": "npm run process-images && npm run generate-manifest",
-    "preview": "vite preview",
-    "build": "vite build"
-  },
-  "dependencies": {
-    "cannon-es": "^0.20.0",
-    "gsap": "3.12",
-    "lil-gui": "^0.19.2",
-    "three": "^0.167.1"
-  },
-  "devDependencies": {
-    "cannon-es-debugger": "^1.0.0",
-    "sharp": "^0.33.4",
-    "vite": "^5.4.0",
-    "vite-plugin-restart": "^0.4.1"
-  }
+    "name": "apple3js",
+    "private": "true",
+    "version": "0.0.1",
+    "scripts": {
+        "process-images": "node process-images.js webp",
+        "generate-manifest": "node generate-manifest.js",
+        "predev": "npm run process-images && npm run generate-manifest",
+        "dev": "vite",
+        "prebuild": "npm run process-images && npm run generate-manifest",
+        "preview": "vite preview",
+        "build": "vite build",
+        "lint": "eslint .",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "dependencies": {
+        "cannon-es": "^0.20.0",
+        "gsap": "3.12",
+        "lil-gui": "^0.19.2",
+        "three": "^0.167.1"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "cannon-es-debugger": "^1.0.0",
+        "eslint": "^10.9.0",
+        "eslint-config-prettier": "^10.1.8",
+        "globals": "^17.11.0",
+        "prettier": "^3.9.6",
+        "sharp": "^0.33.4",
+        "vite": "^5.4.0",
+        "vite-plugin-restart": "^0.4.1"
+    }
 }

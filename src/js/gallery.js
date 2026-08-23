@@ -1,9 +1,9 @@
-import * as THREE from "three"
-import * as CANNON from "cannon-es"
+import * as THREE from 'three'
+import * as CANNON from 'cannon-es'
 import { gsap } from 'gsap'
-import { scene, revealScene } from "./scene.js"
-import { textureLoader } from "./loaders.js"
-import { world, cameraBody } from "./physics.js"
+import { scene, revealScene } from './scene.js'
+import { textureLoader } from './loaders.js'
+import { world, cameraBody } from './physics.js'
 
 /**
  * Memories - Images
@@ -24,7 +24,7 @@ const loadMemoryTextures = async () => {
     try {
         const response = await fetch(manifestUrl)
         const imageFiles = await response.json()
-        galleryFiles = imageFiles.filter(file => file.startsWith(memoryFolderPrefix))
+        galleryFiles = imageFiles.filter((file) => file.startsWith(memoryFolderPrefix))
     } catch (error) {
         console.error('Error fetching manifest:', error)
         revealScene()
@@ -39,7 +39,7 @@ const loadMemoryTextures = async () => {
 
     // Load in manifest order so panel indexes stay stable; one failure must not block the scene
     const results = await Promise.allSettled(
-        galleryFiles.map(file => textureLoader.loadAsync(`/${file}`))
+        galleryFiles.map((file) => textureLoader.loadAsync(`/${file}`)),
     )
 
     results.forEach((result, index) => {
@@ -139,7 +139,6 @@ const generateMemoryPanels = () => {
             mesh: planeMesh,
             body: triggerBody,
         })
-
     })
 }
 
@@ -174,13 +173,25 @@ const updateSpriteMaterial = (textureIndex) => {
     gsap.killTweensOf(sprite.scale)
 
     if (textureIndex === -1) {
-        gsap.to(sprite.scale, { duration: 0.5, x: 0, y: 0, z: 0, onComplete: () => sprite.visible = false })
+        gsap.to(sprite.scale, {
+            duration: 0.5,
+            x: 0,
+            y: 0,
+            z: 0,
+            onComplete: () => (sprite.visible = false),
+        })
     } else {
         sprite.visible = true
-        gsap.to(sprite.scale, { duration: 0.5, x: 3, y: 3, z: 3, onStart: () => {
-            sprite.material.map = memoryTextures[textureIndex];
-            sprite.material.needsUpdate = true;
-        }})
+        gsap.to(sprite.scale, {
+            duration: 0.5,
+            x: 3,
+            y: 3,
+            z: 3,
+            onStart: () => {
+                sprite.material.map = memoryTextures[textureIndex]
+                sprite.material.needsUpdate = true
+            },
+        })
     }
 }
 
@@ -196,7 +207,7 @@ loadMemoryTextures()
 // Called from the render loop
 export const updateGallery = (camera) => {
     // Billboard every memory panel toward the camera
-    planeObjects.forEach(obj => {
+    planeObjects.forEach((obj) => {
         obj.mesh.lookAt(camera.position)
     })
 

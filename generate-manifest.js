@@ -5,15 +5,12 @@ const staticDir = path.join(__dirname, 'static')
 const manifestFile = path.join(staticDir, 'manifest.json')
 
 // The manifest only lists gallery textures; every other asset is referenced directly
-const manifestSourceDirs = [
-    'memories/textures/avif',
-    'memories/textures/webp',
-]
+const manifestSourceDirs = ['memories/textures/avif', 'memories/textures/webp']
 
 // Recursive function to get all image files
 function getImageFiles(dir, fileList = []) {
     const files = fs.readdirSync(dir)
-    files.forEach(file => {
+    files.forEach((file) => {
         const filePath = path.join(dir, file)
         const stat = fs.statSync(filePath)
 
@@ -29,7 +26,7 @@ function getImageFiles(dir, fileList = []) {
 }
 
 try {
-    const imageFiles = manifestSourceDirs.flatMap(sourceDir => {
+    const imageFiles = manifestSourceDirs.flatMap((sourceDir) => {
         const absoluteDir = path.join(staticDir, sourceDir)
         return fs.existsSync(absoluteDir) ? getImageFiles(absoluteDir) : []
     })

@@ -1,25 +1,21 @@
-*
-{
+* {
     margin: 0;
     padding: 0;
 }
 
 html,
-body
-{
+body {
     overflow: hidden;
 }
 
-.webgl
-{
+.webgl {
     position: fixed;
     top: 0;
     left: 0;
     outline: none;
 }
 
-#start-screen
-{
+#start-screen {
     position: fixed;
     top: 0;
     left: 0;
@@ -37,22 +33,19 @@ body
     transition: opacity 0.6s ease;
 }
 
-#start-screen.hidden
-{
+#start-screen.hidden {
     opacity: 0;
     pointer-events: none;
 }
 
-.start-title
-{
+.start-title {
     margin: 0;
     font-size: 28px;
     letter-spacing: 4px;
     text-transform: uppercase;
 }
 
-#start-button
-{
+#start-button {
     padding: 12px 32px;
     font-size: 18px;
     color: #ffffff;
@@ -63,7 +56,6 @@ body
     transition: background 0.2s ease;
 }
 
-#start-button:hover
-{
+#start-button:hover {
     background: rgba(255, 255, 255, 0.15);
 }

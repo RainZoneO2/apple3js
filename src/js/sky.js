@@ -1,8 +1,8 @@
-import * as THREE from "three"
-import { Sky } from "three/addons/objects/Sky.js"
-import { scene } from "./scene.js"
-import { renderer } from "./renderer.js"
-import { gui } from "./debug-gui.js"
+import * as THREE from 'three'
+import { Sky } from 'three/addons/objects/Sky.js'
+import { scene } from './scene.js'
+import { renderer } from './renderer.js'
+import { gui } from './debug-gui.js'
 
 /**
  * Sky
@@ -18,7 +18,7 @@ export const skyEffectController = {
     mieDirectionalG: 0.95,
     elevation: 15,
     azimuth: 180,
-    exposure: renderer.toneMappingExposure
+    exposure: renderer.toneMappingExposure,
 }
 
 function updateSun() {

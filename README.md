@@ -9,17 +9,17 @@ To get started with apple3js, follow these steps:
 1. **Clone the Repository**  
    Clone the project to your desired location:
 
-   ```bash
-   git clone https://github.com/RainZoneO2/apple3js.git
-   cd apple3js
-   ```
+    ```bash
+    git clone https://github.com/RainZoneO2/apple3js.git
+    cd apple3js
+    ```
 
 2. **Install Dependencies**  
    Make sure you have [Node.js](https://nodejs.org/) installed. Then, install the required dependencies:
 
-   ```bash
-   npm install
-   ```
+    ```bash
+    npm install
+    ```
 
 ## Usage
 
@@ -28,29 +28,28 @@ Follow these three steps:
 1. **Add Your Images** <a name="add-your-images"></a>  
    Place your desired images into the `static/memories/textures/to-process` directory. These images will be used as textures in the 3D gallery.
 
-
 2. **Build locally**  
    To see the local build of your 3D gallery, run:
 
-   ```bash
-   npm run build
-   ```
+    ```bash
+    npm run build
+    ```
 
-   If you did [Step 1](#add-your-images) correctly, then you should see some output regarding image processing in the console.
+    If you did [Step 1](#add-your-images) correctly, then you should see some output regarding image processing in the console.
 
 3. **Preview the Local Build**  
    To see the local build of your 3D gallery, run:
 
-   ```bash
-   npm run preview
-   ```
+    ```bash
+    npm run preview
+    ```
 
 Your application will be available at `http://localhost:5173` by default.
 
-4. **Playing around in the gallery**   
-   To pan around the gallery hold `LEFT_CLICK` and move your mouse.    
-   To zoom in/out, use the `SCROLL_WHEEL`.   
-   When your camera is close enough to a memory, it will expand as a card.    
+4. **Playing around in the gallery**  
+   To pan around the gallery hold `LEFT_CLICK` and move your mouse.  
+   To zoom in/out, use the `SCROLL_WHEEL`.  
+   When your camera is close enough to a memory, it will expand as a card.
 
 ## Project Structure
 
@@ -58,7 +57,6 @@ Your application will be available at `http://localhost:5173` by default.
 - `src`: Contains the main code for the application.
 - `static`: Directory that contains all assets for the application.
 - `static/memories/textures`: Directory with images to be used for the gallery.
-
 
 ## Contributing
 

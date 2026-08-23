@@ -1,7 +1,7 @@
-import GUI from "lil-gui"
-import CannonDebugger from "cannon-es-debugger"
-import { scene } from "./scene.js"
-import { world } from "./physics.js"
+import GUI from 'lil-gui'
+import CannonDebugger from 'cannon-es-debugger'
+import { scene } from './scene.js'
+import { world } from './physics.js'
 
 /**
  * Debug tooling. Only wired up in development builds; production gets
@@ -20,7 +20,7 @@ if (import.meta.env.DEV) {
     const cannonDebugger = new CannonDebugger(scene, world, {
         onUpdate(body, mesh) {
             mesh.visible = debugObject.physicsDebugger
-        }
+        },
     })
 
     updatePhysicsDebugger = () => cannonDebugger.update()

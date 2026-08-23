@@ -1,9 +1,9 @@
-import { audioLoader } from "./loaders.js"
-import * as THREE from "three"
+import { audioLoader } from './loaders.js'
+import * as THREE from 'three'
 
 const audioListener = new THREE.AudioListener()
 
-export const audioSource = new THREE.Audio( audioListener )
+export const audioSource = new THREE.Audio(audioListener)
 
 // Browsers block audio until the user interacts with the page, so playback is
 // deferred until the start screen button is clicked.
@@ -15,7 +15,7 @@ const tryPlayAudio = () => {
     audioSource.play()
 }
 
-audioLoader.load('/sounds/the_love_cycle.mp3', function(buffer) {
+audioLoader.load('/sounds/the_love_cycle.mp3', function (buffer) {
     audioSource.setBuffer(buffer)
     audioSource.setLoop(true)
     audioSource.setVolume(0.5)
@@ -28,5 +28,5 @@ export const requestAudioStart = () => {
 }
 
 export const attachAudioListener = (camera) => {
-    camera.add( audioListener )
+    camera.add(audioListener)
 }

@@ -1,5 +1,4 @@
-import * as CANNON from "cannon-es"
-import * as THREE from "three"
+import * as CANNON from 'cannon-es'
 
 /**
  * Physics world
@@ -12,14 +11,10 @@ world.gravity.set(0, -9.81, 0)
 // Materials
 const defaultMaterial = new CANNON.Material('default')
 
-const defaultContactMaterial = new CANNON.ContactMaterial(
-  defaultMaterial,
-  defaultMaterial,
-  {
+const defaultContactMaterial = new CANNON.ContactMaterial(defaultMaterial, defaultMaterial, {
     friction: 0.1,
-    restitution: 0.7
-  }
-)
+    restitution: 0.7,
+})
 
 world.addContactMaterial(defaultContactMaterial)
 world.defaultContactMaterial = defaultContactMaterial
@@ -29,10 +24,7 @@ const floorShape = new CANNON.Plane()
 const floorBody = new CANNON.Body()
 floorBody.mass = 0
 floorBody.addShape(floorShape)
-floorBody.quaternion.setFromAxisAngle(
-  new CANNON.Vec3(- 1, 0, 0), 
-  Math.PI * 0.5
-)
+floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5)
 
 world.addBody(floorBody)
 
@@ -50,11 +42,11 @@ export const objectsToUpdate = []
 
 export const moveCameraCollider = (camera) => {
     // Set the body position directly
-    cameraBody.position.copy(camera.position);
+    cameraBody.position.copy(camera.position)
 
     // Keep velocity zero to avoid unintended movements
-    cameraBody.velocity.set(0, 0, 0);
-    cameraBody.angularVelocity.set(0, 0, 0);
+    cameraBody.velocity.set(0, 0, 0)
+    cameraBody.angularVelocity.set(0, 0, 0)
 }
 
 export const stepWorld = (deltaTime) => {
@@ -62,7 +54,7 @@ export const stepWorld = (deltaTime) => {
 }
 
 export const syncMeshes = () => {
-    objectsToUpdate.forEach(obj => {
+    objectsToUpdate.forEach((obj) => {
         obj.mesh.position.copy(obj.body.position)
         obj.mesh.quaternion.copy(obj.body.quaternion)
     })

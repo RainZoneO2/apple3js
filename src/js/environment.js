@@ -1,25 +1,23 @@
-import * as THREE from "three"
-import { scene } from "./scene.js"
-import { textureLoader } from "./loaders.js"
-import { gui } from "./debug-gui.js"
+import * as THREE from 'three'
+import { scene } from './scene.js'
+import { textureLoader } from './loaders.js'
+import { gui } from './debug-gui.js'
 
 /**
  * Ground textures
  */
 const groundColorTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_diff_1k.avif')
 const groundARMTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_arm_1k.avif')
-const groundNormalTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_nor_gl_1k.avif')
+const groundNormalTexture = textureLoader.load(
+    '/floor/stone_tiles_1k/avif/stone_tiles_nor_gl_1k.avif',
+)
 const groundAlphaTexture = textureLoader.load('/floor/floorAlpha.webp')
 
 groundColorTexture.colorSpace = THREE.SRGBColorSpace
 
-const groundTextures = [
-    groundColorTexture,
-    groundARMTexture,
-    groundNormalTexture,
-]
+const groundTextures = [groundColorTexture, groundARMTexture, groundNormalTexture]
 
-groundTextures.forEach(texture => {
+groundTextures.forEach((texture) => {
     texture.repeat.set(48, 48)
     texture.wrapS = THREE.RepeatWrapping
     texture.wrapT = THREE.RepeatWrapping
@@ -29,17 +27,17 @@ groundTextures.forEach(texture => {
  * Floor
  */
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(100, 100, 10, 10),
-  new THREE.MeshStandardMaterial({
-    color: "#324c8c",
-    map: groundColorTexture,
-    aoMap: groundARMTexture,
-    roughnessMap: groundARMTexture,
-    metalnessMap: groundARMTexture,
-    alphaMap: groundAlphaTexture,
-    transparent: true,
-    normalMap: groundNormalTexture,
-  })
+    new THREE.PlaneGeometry(100, 100, 10, 10),
+    new THREE.MeshStandardMaterial({
+        color: '#324c8c',
+        map: groundColorTexture,
+        aoMap: groundARMTexture,
+        roughnessMap: groundARMTexture,
+        metalnessMap: groundARMTexture,
+        alphaMap: groundAlphaTexture,
+        transparent: true,
+        normalMap: groundNormalTexture,
+    }),
 )
 floor.receiveShadow = true
 floor.rotation.x = -Math.PI * 0.5
