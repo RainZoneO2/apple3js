@@ -208,12 +208,21 @@ export const getPanelCount = () => planeObjects.length
 
 export const getPanelPosition = (index) => planeObjects[index].mesh.position.clone()
 
+// Forced focus (deep links, tour): while locked, proximity detection stays
+// out of the way so it cannot close the card we deliberately opened.
+let focusLocked = false
+
 // Show a panel's card without needing camera proximity (deep links, tour)
 export const focusPanel = (index) => {
-    if (planeObjects[index]) showPanel(index)
+    if (!planeObjects[index]) return
+    focusLocked = true
+    showPanel(index)
 }
 
-export const unfocusPanel = () => hidePanel()
+export const unfocusPanel = () => {
+    focusLocked = false
+    hidePanel()
+}
 
 export const getPanelSource = (index) => panelSources[index]
 
@@ -235,8 +244,10 @@ export const updateGallery = (camera, elapsedTime = 0) => {
 
     // Distance-based proximity measured from the player apple: nearest panel
     // within the enter radius expands; the open card only collapses once the
-    // apple leaves its larger exit radius.
-    if (planeObjects.length === 0) return
+    // apple leaves its larger exit radius. Distances are planar (XZ) so a
+    // card's hanging height never distorts the radius. Skipped entirely while
+    // a forced focus is active.
+    if (planeObjects.length === 0 || focusLocked) return
 
     const playerPosition = getPlayerPosition()
 
@@ -245,7 +256,9 @@ export const updateGallery = (camera, elapsedTime = 0) => {
         let nearestDistance = Infinity
 
         planeObjects.forEach((obj, index) => {
-            const distance = playerPosition.distanceTo(obj.mesh.position)
+            const dx = playerPosition.x - obj.mesh.position.x
+            const dz = playerPosition.z - obj.mesh.position.z
+            const distance = Math.hypot(dx, dz)
             if (distance < nearestDistance) {
                 nearestDistance = distance
                 nearestIndex = index
@@ -257,7 +270,9 @@ export const updateGallery = (camera, elapsedTime = 0) => {
         }
     } else {
         const activeMesh = planeObjects[activePanelIndex].mesh
-        if (playerPosition.distanceTo(activeMesh.position) > CONFIG.gallery.proximityExit) {
+        const dx = playerPosition.x - activeMesh.position.x
+        const dz = playerPosition.z - activeMesh.position.z
+        if (Math.hypot(dx, dz) > CONFIG.gallery.proximityExit) {
             hidePanel()
         }
     }
