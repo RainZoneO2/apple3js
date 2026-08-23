@@ -51,13 +51,9 @@ export const throwApple = () => {
     body.velocity.set(
         throwDirection.x * THROW_SPEED,
         throwDirection.y * THROW_SPEED + 2.5,
-        throwDirection.z * THROW_SPEED
+        throwDirection.z * THROW_SPEED,
     )
-    body.angularVelocity.set(
-        Math.random() * 4 - 2,
-        Math.random() * 4 - 2,
-        Math.random() * 4 - 2
-    )
+    body.angularVelocity.set(Math.random() * 4 - 2, Math.random() * 4 - 2, Math.random() * 4 - 2)
 
     scene.add(mesh)
     world.addBody(body)

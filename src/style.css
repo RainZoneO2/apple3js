@@ -37,16 +37,14 @@ body {
     opacity: 0;
     pointer-events: none;
 }
-.start-title
-{
+.start-title {
     margin: 0;
     font-size: 28px;
     letter-spacing: 4px;
     text-transform: uppercase;
 }
 
-.progress-track
-{
+.progress-track {
     width: min(320px, 70vw);
     height: 4px;
     background: rgba(255, 255, 255, 0.15);
@@ -54,8 +52,7 @@ body {
     overflow: hidden;
 }
 
-.progress-fill
-{
+.progress-fill {
     width: 0%;
     height: 100%;
     background: #ffffff;
@@ -72,19 +69,16 @@ body {
     cursor: pointer;
     transition: background 0.2s ease;
 }
-#start-button:hover
-{
+#start-button:hover {
     background: rgba(255, 255, 255, 0.15);
 }
 
-#start-button:disabled
-{
+#start-button:disabled {
     opacity: 0.5;
     cursor: wait;
 }
 
-#audio-controls
-{
+#audio-controls {
     position: fixed;
     top: 16px;
     right: 16px;
@@ -94,8 +88,7 @@ body {
     gap: 8px;
 }
 
-#audio-controls button
-{
+#audio-controls button {
     padding: 6px 14px;
     font-size: 13px;
     color: #ffffff;
@@ -106,13 +99,11 @@ body {
     transition: background 0.2s ease;
 }
 
-#audio-controls button:hover
-{
+#audio-controls button:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 
-#memory-modal
-{
+#memory-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -124,20 +115,17 @@ body {
     justify-content: center;
 }
 
-#memory-modal.hidden
-{
+#memory-modal.hidden {
     display: none;
 }
 
-.modal-backdrop
-{
+.modal-backdrop {
     position: absolute;
     inset: 0;
     background: rgba(10, 4, 18, 0.75);
 }
 
-.modal-card
-{
+.modal-card {
     position: relative;
     margin: 0;
     padding: 16px 16px 12px;
@@ -150,16 +138,14 @@ body {
     max-width: 86vw;
 }
 
-#modal-img
-{
+#modal-img {
     max-width: 80vw;
     max-height: 72vh;
     border-radius: 8px;
     display: block;
 }
 
-.modal-card figcaption
-{
+.modal-card figcaption {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
@@ -168,19 +154,16 @@ body {
     font-family: sans-serif;
 }
 
-#modal-title
-{
+#modal-title {
     font-size: 16px;
 }
 
-#modal-date
-{
+#modal-date {
     font-size: 13px;
     opacity: 0.7;
 }
 
-#modal-close
-{
+#modal-close {
     align-self: flex-end;
     padding: 5px 14px;
     font-size: 13px;
@@ -191,13 +174,11 @@ body {
     cursor: pointer;
 }
 
-#modal-close:hover
-{
+#modal-close:hover {
     background: rgba(255, 255, 255, 0.15);
 }
 
-#tour-toggle
-{
+#tour-toggle {
     position: fixed;
     bottom: 16px;
     left: 16px;
@@ -212,7 +193,6 @@ body {
     transition: background 0.2s ease;
 }
 
-#tour-toggle:hover
-{
+#tour-toggle:hover {
     background: rgba(255, 255, 255, 0.2);
 }

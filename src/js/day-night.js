@@ -26,13 +26,7 @@ export const updateDayNight = (elapsedTime) => {
     if (!state.enabled) return
 
     const phase = Math.sin((elapsedTime / state.cycleSeconds) * Math.PI * 2)
-    const elevation = THREE.MathUtils.mapLinear(
-        phase,
-        -1,
-        1,
-        NIGHT_ELEVATION,
-        DAY_ELEVATION
-    )
+    const elevation = THREE.MathUtils.mapLinear(phase, -1, 1, NIGHT_ELEVATION, DAY_ELEVATION)
 
     skyEffectController.elevation = elevation
     updateSun()
@@ -40,10 +34,7 @@ export const updateDayNight = (elapsedTime) => {
     // Daylight ramps from night to full sun across the sunrise/sunset band
     const daylight = THREE.MathUtils.clamp(elevation / 30, 0, 1)
 
-    directionalLight.intensity = Math.max(
-        0.25,
-        CONFIG.theme.directionalIntensity * daylight
-    )
+    directionalLight.intensity = Math.max(0.25, CONFIG.theme.directionalIntensity * daylight)
 
     fogColor.copy(NIGHT_FOG).lerp(DAY_FOG, daylight)
     scene.fog.color.copy(fogColor)

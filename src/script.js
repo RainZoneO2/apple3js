@@ -16,7 +16,15 @@ import { CONFIG } from './js/config.js'
 import { composer, setComposerSize } from './js/postprocessing.js'
 import { updateAtmosphere } from './js/atmosphere.js'
 import { initModal } from './js/modal.js'
-import { initGalleryInteraction, onPanelsReady, getPanelCount, getPanelPosition, getPanelSource, focusPanel, unfocusPanel } from './js/gallery.js'
+import {
+    initGalleryInteraction,
+    onPanelsReady,
+    getPanelCount,
+    getPanelPosition,
+    getPanelSource,
+    focusPanel,
+    unfocusPanel,
+} from './js/gallery.js'
 import { throwApple } from './js/apples.js'
 import { flyToPanel, startTour, stopTour, isTourActive } from './js/tour.js'
 import { openMemory, currentHashMemory } from './js/modal.js'

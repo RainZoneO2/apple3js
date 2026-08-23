@@ -44,7 +44,10 @@ export const currentHashMemory = () => {
 }
 
 const prettifyFileName = (url) => {
-    const base = url.split('/').pop().replace(/\.[^.]+$/, '')
+    const base = url
+        .split('/')
+        .pop()
+        .replace(/\.[^.]+$/, '')
     return base.replace(/[-_]+/g, ' ').trim()
 }
 

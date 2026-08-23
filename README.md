@@ -9,17 +9,17 @@ To get started with apple3js, follow these steps:
 1. **Clone the Repository**
    Clone the project to your desired location:
 
-   ```bash
-   git clone https://github.com/RainZoneO2/apple3js.git
-   cd apple3js
-   ```
+    ```bash
+    git clone https://github.com/RainZoneO2/apple3js.git
+    cd apple3js
+    ```
 
 2. **Install Dependencies**
    Make sure you have [Node.js](https://nodejs.org/) installed. Then, install the required dependencies:
 
-   ```bash
-   npm install
-   ```
+    ```bash
+    npm install
+    ```
 
 ## Usage
 
@@ -38,15 +38,15 @@ This processes any queued images, regenerates the asset manifest, and starts the
 
 2. **Build locally**
 
-   ```bash
-   npm run build
-   ```
+    ```bash
+    npm run build
+    ```
 
 3. **Preview the Local Build**
 
-   ```bash
-   npm run preview
-   ```
+    ```bash
+    npm run preview
+    ```
 
 Your application will be available at `http://localhost:4173` by default.
 
@@ -80,9 +80,9 @@ Two Node scripts run automatically before `dev` and `build`:
 - **Content & theme**: edit `src/js/config.js` (title, greeting text, fog/floor colors, light intensities, sky defaults, gallery layout).
 - **Captions**: add entries per image file name in `static/memories/metadata.json`:
 
-  ```json
-  { "my-photo.webp": { "title": "Summer 2024", "date": "August 2024" } }
-  ```
+    ```json
+    { "my-photo.webp": { "title": "Summer 2024", "date": "August 2024" } }
+    ```
 
 ## Contributing
 

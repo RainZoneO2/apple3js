@@ -258,7 +258,10 @@ const panelAtPointer = (event, camera, canvas) => {
     pointerNDC.y = -(event.clientY / canvas.clientHeight) * 2 + 1
 
     raycaster.setFromCamera(pointerNDC, camera)
-    const hits = raycaster.intersectObjects(planeObjects.map((obj) => obj.mesh), false)
+    const hits = raycaster.intersectObjects(
+        planeObjects.map((obj) => obj.mesh),
+        false,
+    )
 
     if (hits.length === 0) return -1
     return planeObjects.findIndex((obj) => obj.mesh === hits[0].object)

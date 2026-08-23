@@ -40,7 +40,7 @@ audioLoader.load(
     function (error) {
         console.error('Failed to load music:', error)
         markAssetLoaded()
-    }
+    },
 )
 
 export const requestAudioStart = () => {

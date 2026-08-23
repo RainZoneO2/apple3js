@@ -8,7 +8,7 @@ const listeners = new Set()
 
 const notify = () => {
     const progress = { loaded: loadedCount, total: totalCount }
-    listeners.forEach(listener => listener(progress))
+    listeners.forEach((listener) => listener(progress))
 }
 
 export const registerAssets = (count) => {
