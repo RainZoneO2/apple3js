@@ -128,46 +128,57 @@ const memoryTextures = []
 const memoryFolderPath = 'memories/textures/webp/'
 const manifestUrl = '/manifest.json'
 
-fetch(manifestUrl)
-    .then(response => response.json())
-    .then(imageFiles => {
-        const filteredImages = imageFiles.filter(file => file.startsWith(memoryFolderPath))
-        
-        let loadedTextures = 0
+const revealScene = () => {
+    gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 })
+}
 
-        filteredImages.forEach(file => {
-            const imageUrl = `${file}`
-            
-            textureLoader.load(imageUrl, texture => {
-                memoryTextures.push(texture)
-                loadedTextures++
-                
-                // console.log('Loaded texture:', imageUrl)
-            
-                // Check if all textures have been loaded
-                if (loadedTextures === filteredImages.length) {
-                    memoryTextures.forEach(texture => {
-                        texture.colorSpace = THREE.SRGBColorSpace
-                        texture.generateMipmaps = false
-                        console.log('Color space set to SRGB for texture & Mipmaps turned off')
-                    })
-                    console.log('All textures loaded:', memoryTextures.length)
-                    
-                    gsap.to(overlayMaterial.uniforms.uAlpha, { duration:3, value: 0})
-                    
+const loadMemoryTextures = async () => {
+    let galleryFiles
 
-                    generateMemoryPanels()
-                }
-            })
-        })
+    try {
+        const response = await fetch(manifestUrl)
+        const imageFiles = await response.json()
+        galleryFiles = imageFiles.filter(file => file.startsWith(memoryFolderPath))
+    } catch (error) {
+        console.error('Error fetching manifest:', error)
+        revealScene()
+        return
+    }
 
-        if (filteredImages.length === 0) {
-            console.log(`No images found in target folder: ${memoryFolderPath}`)
+    if (galleryFiles.length === 0) {
+        console.warn(`No images found in target folder: ${memoryFolderPath}`)
+        revealScene()
+        return
+    }
+
+    // Load in manifest order so panel indexes stay stable; one failure must not block the scene
+    const results = await Promise.allSettled(
+        galleryFiles.map(file => textureLoader.loadAsync(file))
+    )
+
+    results.forEach((result, index) => {
+        if (result.status !== 'fulfilled') {
+            console.error(`Failed to load ${galleryFiles[index]}:`, result.reason)
+            return
         }
+
+        const texture = result.value
+        texture.colorSpace = THREE.SRGBColorSpace
+        texture.generateMipmaps = false
+        memoryTextures[index] = texture
     })
-    .catch(error => {
-        console.error('Error fetching manifest or images:', error)
-    })
+
+    if (!memoryTextures.some(Boolean)) {
+        console.error('All memory textures failed to load')
+        revealScene()
+        return
+    }
+
+    revealScene()
+    generateMemoryPanels()
+}
+
+loadMemoryTextures()
 
 /**
  * Utils
