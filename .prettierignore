@@ -2,3 +2,5 @@ dist
 node_modules
 static
 package-lock.json
+session*.json
+session-*.md
