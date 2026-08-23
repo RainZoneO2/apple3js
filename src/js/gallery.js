@@ -1,9 +1,7 @@
 import * as THREE from 'three'
-import * as CANNON from 'cannon-es'
 import { gsap } from 'gsap'
 import { scene, revealScene } from './scene.js'
 import { textureLoader } from './loaders.js'
-import { world, cameraBody } from './physics.js'
 import { registerAssets, markAssetLoaded } from './loading.js'
 import { CONFIG } from './config.js'
 import { openMemory, isModalOpen } from './modal.js'
@@ -76,8 +74,8 @@ const loadMemoryTextures = async () => {
     readyCallbacks.forEach((callback) => callback())
 }
 
-// Only one memory is shown at a time; cannon-es fires 'collide' on every
-// step while overlapping, so state guards keep the tweens from churning.
+// Only one memory is shown at a time; proximity uses hysteresis so a card
+// doesn't flicker when the camera sits right on the boundary radius.
 let activePanelIndex = -1
 
 const showPanel = (index) => {
@@ -106,9 +104,6 @@ const generateMemoryPanels = () => {
     // Geometry
     const planeGeometry = new THREE.PlaneGeometry(planeSize, planeSize)
 
-    // Body Geometry
-    const boxShape = new CANNON.Box(new CANNON.Vec3(planeSize * 0.5, 3, planeSize * 0.5))
-
     memoryTextures.forEach((texture, index) => {
         // Material
         const planeMaterial = new THREE.MeshBasicMaterial({
@@ -134,39 +129,11 @@ const generateMemoryPanels = () => {
 
         scene.add(planeMesh)
 
-        // Trigger zone for panel
-        const triggerBody = new CANNON.Body({ isTrigger: true })
-        triggerBody.addShape(boxShape)
-        triggerBody.position.set(x, 3, z)
-
-        world.addBody(triggerBody)
-
-        triggerBody.addEventListener('collide', (event) => {
-            if (event.body === cameraBody) showPanel(index)
-        })
-
         planeObjects.push({
             mesh: planeMesh,
-            body: triggerBody,
         })
     })
 }
-
-// Global event listeners for endContact on the world
-world.addEventListener('endContact', (event) => {
-    const bodyA = event.bodyA
-    const bodyB = event.bodyB
-    if (bodyA === cameraBody || bodyB === cameraBody) {
-        const otherBody = bodyA === cameraBody ? bodyB : bodyA
-        const planeObject = planeObjects.find((obj) => obj.body === otherBody)
-        if (!planeObject) return
-
-        // Only hide if the panel being left is the one currently shown,
-        // so a late endContact can't dismiss a panel just entered.
-        const planeIndex = planeObjects.indexOf(planeObject)
-        if (planeIndex === activePanelIndex) hidePanel()
-    }
-})
 
 const spriteMaterial = new THREE.SpriteMaterial()
 const sprite = new THREE.Sprite(spriteMaterial)
@@ -244,6 +211,32 @@ export const updateGallery = (camera) => {
     })
 
     updateSpritePosition(camera)
+
+    // Distance-based proximity: nearest panel within the enter radius expands;
+    // the open card only collapses once the camera leaves its larger exit radius.
+    if (planeObjects.length === 0) return
+
+    if (activePanelIndex === -1) {
+        let nearestIndex = -1
+        let nearestDistance = Infinity
+
+        planeObjects.forEach((obj, index) => {
+            const distance = camera.position.distanceTo(obj.mesh.position)
+            if (distance < nearestDistance) {
+                nearestDistance = distance
+                nearestIndex = index
+            }
+        })
+
+        if (nearestIndex !== -1 && nearestDistance <= CONFIG.gallery.proximityEnter) {
+            showPanel(nearestIndex)
+        }
+    } else {
+        const activeMesh = planeObjects[activePanelIndex].mesh
+        if (camera.position.distanceTo(activeMesh.position) > CONFIG.gallery.proximityExit) {
+            hidePanel()
+        }
+    }
 }
 
 /**

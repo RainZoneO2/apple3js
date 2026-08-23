@@ -16,6 +16,10 @@ export const CONFIG = {
         planeSize: 6,
         planeSpacing: 3.5,
         panelHeight: 4,
+        // Card expands when the camera comes this close to a panel...
+        proximityEnter: 4.5,
+        // ...and collapses only after leaving this larger radius (hysteresis)
+        proximityExit: 5.5,
     },
 
     audio: {
