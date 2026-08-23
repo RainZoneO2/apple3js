@@ -61,6 +61,17 @@ Press `F` or `SPACE` to throw an apple.
 Use `Start tour` (bottom left) to glide between memories automatically.
 Share a direct link to any memory — opening it flies there on entry (e.g. `#memory-0`).
 
+### Atmosphere & music
+
+The gallery sits under a permanent procedural night sky — nebula clouds, a
+milky-way band, and twinkling stars rendered by a custom shader (`galaxy-sky.js`),
+with moonlit lighting, deep-purple fog, and bloom tuned for the dark.
+
+The soundtrack plays two identical-length arrangements of the same song in
+perfect sync: the guitar version fades in while a memory card is open and
+fades back out when it closes, so it feels like the song swaps instruments
+mid-phrase.
+
 ## Project Structure
 
 - `src`: Application code. `script.js` is the entry point; the `src/js` modules cover scene setup, physics, the gallery, sounds, and debug tooling.
@@ -77,7 +88,7 @@ Two Node scripts run automatically before `dev` and `build`:
 
 ## Customizing
 
-- **Content & theme**: edit `src/js/config.js` (title, greeting text, fog/floor colors, light intensities, sky defaults, gallery layout).
+- **Content & theme**: edit `src/js/config.js` (title, greeting text, galaxy/fog/floor colors, light intensities, gallery layout, proximity radii).
 - **Captions**: add entries per image file name in `static/memories/metadata.json`:
 
     ```json
