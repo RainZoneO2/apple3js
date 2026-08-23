@@ -51,6 +51,8 @@ const loadMemoryTextures = async () => {
         const texture = result.value
         texture.colorSpace = THREE.SRGBColorSpace
         texture.generateMipmaps = false
+        // generateMipmaps is off, so the default mip-mapped minFilter must go too
+        texture.minFilter = THREE.LinearFilter
         memoryTextures[index] = texture
     })
 
@@ -163,10 +165,10 @@ sprite.scale.set(3, 3, 1)
 sprite.visible = false
 scene.add(sprite)
 
-// Utils
+// Utils (scratch objects reused every frame to avoid GC churn)
 const cameraDirection = new THREE.Vector3()
+const spritePosition = new THREE.Vector3()
 const distanceFromCamera = 2 // Distance from the camera
-let newPosition
 
 const updateSpriteMaterial = (textureIndex) => {
     gsap.killTweensOf(sprite.scale)
@@ -183,13 +185,10 @@ const updateSpriteMaterial = (textureIndex) => {
 }
 
 const updateSpritePosition = (camera) => {
-    // Calculate the position in front of the camera
+    // Position the sprite in front of the camera
     camera.getWorldDirection(cameraDirection)
-
-    newPosition = new THREE.Vector3().copy(camera.position).add(cameraDirection.multiplyScalar(distanceFromCamera))
-
-    // Update the sprite's position
-    sprite.position.copy(newPosition)
+    spritePosition.copy(camera.position).addScaledVector(cameraDirection, distanceFromCamera)
+    sprite.position.copy(spritePosition)
 }
 
 loadMemoryTextures()
