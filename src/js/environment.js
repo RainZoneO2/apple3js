@@ -9,7 +9,6 @@ import { gui } from "./debug-gui.js"
 const groundColorTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_diff_1k.avif')
 const groundARMTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_arm_1k.avif')
 const groundNormalTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_nor_gl_1k.avif')
-const groundDisplacementTexture = textureLoader.load('/floor/stone_tiles_1k/avif/stone_tiles_disp_1k.avif')
 const groundAlphaTexture = textureLoader.load('/floor/floorAlpha.webp')
 
 groundColorTexture.colorSpace = THREE.SRGBColorSpace
@@ -18,7 +17,6 @@ const groundTextures = [
     groundColorTexture,
     groundARMTexture,
     groundNormalTexture,
-    groundDisplacementTexture,
 ]
 
 groundTextures.forEach(texture => {
@@ -40,8 +38,6 @@ const floor = new THREE.Mesh(
     metalnessMap: groundARMTexture,
     alphaMap: groundAlphaTexture,
     transparent: true,
-    // displacementMap: groundDisplacementTexture,
-    // displacementBias: 0,
     normalMap: groundNormalTexture,
   })
 )
@@ -62,9 +58,10 @@ scene.add(directionalLight)
 // Cast and receive
 directionalLight.castShadow = true
 
-// Mapping
-directionalLight.shadow.mapSize.set(512, 512)
-directionalLight.shadow.camera.far = 30
+// Shadow frustum sized to cover the greeting text row (widened in
+// greeting-text.js once the text width is known)
+directionalLight.shadow.mapSize.set(1024, 1024)
+directionalLight.shadow.camera.far = 40
 directionalLight.shadow.camera.left = -7
 directionalLight.shadow.camera.top = 7
 directionalLight.shadow.camera.right = 7

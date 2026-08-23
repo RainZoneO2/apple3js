@@ -3,6 +3,7 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
 import { scene } from "./scene.js"
 import { world, objectsToUpdate } from "./physics.js"
+import { directionalLight } from "./environment.js"
 
 const fontLoader = new FontLoader()
 
@@ -13,6 +14,9 @@ fontLoader.load(
 
         // Material
         const textMaterial = new THREE.MeshNormalMaterial()
+
+        // Letters cast onto the floor
+        const castShadows = true
 
         let offsetX = 0
         let totalWidth = 0
@@ -47,6 +51,7 @@ fontLoader.load(
             totalWidth += letterWidth + 0.08
 
             const letterMesh = new THREE.Mesh(letterGeometry, textMaterial)
+            letterMesh.castShadow = castShadows
             letterMesh.position.x = offsetX
             letterMesh.position.y = letterHeight / 2 + 0.5
             scene.add(letterMesh)
@@ -73,6 +78,15 @@ fontLoader.load(
             obj.mesh.position.x += centerOffsetX
             obj.body.position.x += centerOffsetX
         })
+
+        // Widen the shadow frustum to cover the full greeting row
+        const shadowCamera = directionalLight.shadow.camera
+        const halfExtent = Math.max(totalWidth / 2 + 1, 7)
+        shadowCamera.left = -halfExtent
+        shadowCamera.right = halfExtent
+        shadowCamera.top = halfExtent * 0.6
+        shadowCamera.bottom = -halfExtent * 0.6
+        shadowCamera.updateProjectionMatrix()
     },
     undefined,
     (error) => {
