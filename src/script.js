@@ -10,7 +10,7 @@ import './js/sky.js'
 import './js/environment.js'
 import './js/greeting-text.js'
 import { updateGallery } from './js/gallery.js'
-import { requestAudioStart, attachAudioListener } from './js/sounds.js'
+import { requestAudioStart, attachAudioListener, toggleMute, nextTrack } from './js/sounds.js'
 import { onLoadProgress } from './js/loading.js'
 
 // Add audioListener to camera
@@ -36,6 +36,19 @@ onLoadProgress(({ loaded, total }) => {
 startButton.addEventListener('click', () => {
     requestAudioStart()
     startScreen.classList.add('hidden')
+})
+
+/**
+ * Audio controls
+ */
+const muteToggle = document.querySelector('#mute-toggle')
+
+muteToggle.addEventListener('click', () => {
+    muteToggle.textContent = toggleMute() ? 'Sound: Off' : 'Sound: On'
+})
+
+document.querySelector('#next-track').addEventListener('click', () => {
+    nextTrack()
 })
 
 /**
