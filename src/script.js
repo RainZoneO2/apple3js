@@ -546,11 +546,12 @@ window.addEventListener("resize", () => {
  * Camera
  */
 // Base camera
+// Far plane must clear the Sky mesh (scale 1000 -> corners ~866 units away)
 const camera = new THREE.PerspectiveCamera(
   75,
   sizes.width / sizes.height,
   0.1,
-  100
+  2000
 )
 camera.position.set(1, 6, 7)
 scene.add(camera)
@@ -581,7 +582,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.toneMapping = THREE.ReinhardToneMapping
-renderer.toneMappingExposure = 0.5
+renderer.toneMappingExposure = 1.1
 
 /**
  * Shadows
@@ -610,7 +611,7 @@ const skyEffectController = {
     rayleigh: 3,
     mieCoefficient: 0.1,
     mieDirectionalG: 0.95,
-    elevation: 0,
+    elevation: 15,
     azimuth: 180,
     exposure: renderer.toneMappingExposure
 }
@@ -640,7 +641,7 @@ updateSun()
 /**
  * Fog
  */
-scene.fog = new THREE.FogExp2('#871769', 0.08)
+scene.fog = new THREE.FogExp2('#871769', 0.035)
 
 const fogFolder = gui.addFolder('Fog')
 fogFolder.close()
