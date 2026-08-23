@@ -4,6 +4,7 @@ import { gsap } from 'gsap'
 import { scene, revealScene } from './scene.js'
 import { textureLoader } from './loaders.js'
 import { world, cameraBody } from './physics.js'
+import { registerAssets, markAssetLoaded } from './loading.js'
 
 /**
  * Memories - Images
@@ -38,11 +39,13 @@ const loadMemoryTextures = async () => {
     }
 
     // Load in manifest order so panel indexes stay stable; one failure must not block the scene
+    registerAssets(galleryFiles.length)
     const results = await Promise.allSettled(
         galleryFiles.map((file) => textureLoader.loadAsync(`/${file}`)),
     )
 
     results.forEach((result, index) => {
+        markAssetLoaded()
         if (result.status !== 'fulfilled') {
             console.error(`Failed to load ${galleryFiles[index]}:`, result.reason)
             return
