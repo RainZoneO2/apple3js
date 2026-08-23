@@ -26,6 +26,7 @@ import {
 } from './js/gallery.js'
 import { throwApple } from './js/apples.js'
 import { updatePlayer, getPlayerPosition } from './js/player.js'
+import { updateOrchard } from './js/orchard.js'
 import { flyToPanel, startTour, stopTour, isTourActive } from './js/tour.js'
 import { openMemory, currentHashMemory } from './js/modal.js'
 import { updateGalaxySky } from './js/galaxy-sky.js'
@@ -127,7 +128,7 @@ const tick = () => {
     const deltaTime = elapsedTime - oldElapsedTime
     oldElapsedTime = elapsedTime
 
-    updateGallery(camera)
+    updateGallery(camera, elapsedTime)
 
     // Update physics world
     stepWorld(deltaTime)
@@ -145,6 +146,7 @@ const tick = () => {
 
     // Render
     updateGalaxySky(elapsedTime)
+    updateOrchard(elapsedTime)
     updateAtmosphere(elapsedTime)
     composer.render()
 

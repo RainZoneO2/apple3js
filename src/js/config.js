@@ -14,12 +14,20 @@ export const CONFIG = {
         folderPrefix: 'memories/textures/webp/',
         manifestUrl: '/manifest.json',
         planeSize: 6,
-        planeSpacing: 3.5,
         panelHeight: 4,
+        // Golden-angle scatter band where memory cards hang in the grove
+        layoutRadiusMin: 11,
+        layoutRadiusMax: 15,
         // Card expands when the camera comes this close to a panel...
         proximityEnter: 4.5,
         // ...and collapses only after leaving this larger radius (hysteresis)
         proximityExit: 5.5,
+    },
+
+    orchard: {
+        treeCount: 9,
+        treeRadiusMin: 21,
+        treeRadiusMax: 33,
     },
 
     player: {

@@ -11,6 +11,16 @@ import { getPlayerPosition } from './player.js'
 /**
  * Memories - Images
  */
+// Small glowing fruit dangling under each card, tying them to the orchard
+const stemAppleGeometry = new THREE.SphereGeometry(0.26, 12, 10)
+stemAppleGeometry.scale(1, 0.88, 1)
+const stemAppleMaterial = new THREE.MeshStandardMaterial({
+    color: '#c0392b',
+    emissive: '#ff4433',
+    emissiveIntensity: 0.8,
+    roughness: 0.5,
+})
+const stemApples = []
 const memoryAlphaTexture = textureLoader.load('/memories/memoryAlpha.webp')
 
 // Mesh array for referencing in tick()
@@ -95,18 +105,14 @@ const hidePanel = () => {
 }
 
 const generateMemoryPanels = () => {
-    // Calculate number of rows and columns based on length of memoryTextures
-    const numColumns = Math.ceil(Math.sqrt(memoryTextures.length))
-    const numRows = Math.ceil(memoryTextures.length / numColumns)
-
-    // Spacing between planes
-    const spacing = CONFIG.gallery.planeSpacing
-
-    // Size of square plane
     const planeSize = CONFIG.gallery.planeSize
 
-    // Geometry
+    // Geometry shared by every card
     const planeGeometry = new THREE.PlaneGeometry(planeSize, planeSize)
+
+    // Irrational multipliers give each card its own angle, radius band, and
+    // height without clustering - an organic spiral through the grove
+    const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5))
 
     memoryTextures.forEach((texture, index) => {
         // Material
@@ -120,18 +126,24 @@ const generateMemoryPanels = () => {
         // Mesh
         const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial)
 
-        // Get the current row
-        const row = Math.floor(index / numColumns)
-        // Get the current column
-        const column = index % numColumns
+        const angle = index * GOLDEN_ANGLE
+        const radiusBand = THREE.MathUtils.lerp(
+            CONFIG.gallery.layoutRadiusMin,
+            CONFIG.gallery.layoutRadiusMax,
+            (index * 0.618033988749895) % 1,
+        )
+        const height = CONFIG.gallery.panelHeight + ((index * 0.7548776662466927) % 1) * 1.6
 
-        // Calculate x and z based on row and column
-        const x = ((planeSize + spacing) * (2 * column - numColumns)) / 2
-        const z = ((planeSize + spacing) * (2 * row - numRows)) / 2
-
-        planeMesh.position.set(x, CONFIG.gallery.panelHeight, z)
+        planeMesh.position.set(Math.sin(angle) * radiusBand, height, Math.cos(angle) * radiusBand)
 
         scene.add(planeMesh)
+
+        // Stem fruit hanging beneath the card, bobbing gently
+        const stemApple = new THREE.Mesh(stemAppleGeometry, stemAppleMaterial)
+        stemApple.position.copy(planeMesh.position)
+        stemApple.position.y -= planeSize / 2 + 0.9
+        scene.add(stemApple)
+        stemApples.push({ mesh: stemApple, baseY: stemApple.position.y, phase: index * 1.7 })
 
         planeObjects.push({
             mesh: planeMesh,
@@ -208,10 +220,15 @@ export const getPanelSource = (index) => panelSources[index]
 loadMemoryTextures()
 
 // Called from the render loop
-export const updateGallery = (camera) => {
+export const updateGallery = (camera, elapsedTime = 0) => {
     // Billboard every memory panel toward the camera
     planeObjects.forEach((obj) => {
         obj.mesh.lookAt(camera.position)
+    })
+
+    // Gentle bob on the stem fruit
+    stemApples.forEach(({ mesh, baseY, phase }) => {
+        mesh.position.y = baseY + Math.sin(elapsedTime * 1.6 + phase) * 0.18
     })
 
     updateSpritePosition(camera)

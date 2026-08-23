@@ -11,9 +11,11 @@ world.gravity.set(0, -9.81, 0)
 // Materials
 const defaultMaterial = new CANNON.Material('default')
 
+// Grippy and only mildly bouncy: letters bowl instead of exploding, apples
+// thud rather than ping-pong across the island
 const defaultContactMaterial = new CANNON.ContactMaterial(defaultMaterial, defaultMaterial, {
-    friction: 0.1,
-    restitution: 0.7,
+    friction: 0.3,
+    restitution: 0.35,
 })
 
 world.addContactMaterial(defaultContactMaterial)
