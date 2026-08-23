@@ -36,7 +36,10 @@ const floor = new THREE.Mesh(
         roughnessMap: groundARMTexture,
         metalnessMap: groundARMTexture,
         alphaMap: groundAlphaTexture,
-        transparent: true,
+        // Opaque (alpha-tested) so the floor writes depth in the opaque pass;
+        // transparent floors get sorted against the memory cards and can
+        // paint over them at certain viewing angles.
+        alphaTest: 0.45,
         normalMap: groundNormalTexture,
     }),
 )
