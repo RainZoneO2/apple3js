@@ -78,17 +78,56 @@ body {
     cursor: wait;
 }
 
-#audio-controls {
+#settings-hud {
     position: fixed;
     top: 16px;
     right: 16px;
     z-index: 5;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#quality-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+#quality-buttons button {
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#quality-buttons button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#quality-buttons button.active {
+    background: rgba(255, 255, 255, 0.85);
+    color: #1a1024;
+    border-color: transparent;
+    font-weight: bold;
+}
+
+#volume-slider {
+    width: 110px;
+    accent-color: #c9a0ff;
+    cursor: pointer;
+}
+
+#audio-controls {
+    display: flex;
     gap: 8px;
 }
 
-#audio-controls button {
+#audio-controls button,
+#settings-hud > button {
     padding: 6px 14px;
     font-size: 13px;
     color: #ffffff;

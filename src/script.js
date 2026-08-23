@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import './js/loaders.js'
 import './js/scene.js'
+import './js/settings.js'
 import { sizes } from './js/sizes.js'
 import { canvas, updateRendererSize } from './js/renderer.js'
 import { camera, updateCameraAspect, updateCameraRig } from './js/camera.js'

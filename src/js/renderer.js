@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { sizes } from './sizes.js'
 import { CONFIG } from './config.js'
+import { qualityState } from './quality-state.js'
 
 // Canvas
 export const canvas = document.querySelector('canvas.webgl')
@@ -15,11 +16,11 @@ export const renderer = new THREE.WebGLRenderer({
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, qualityState.pixelRatioCap))
 renderer.toneMapping = THREE.ReinhardToneMapping
 renderer.toneMappingExposure = CONFIG.theme.toneMappingExposure
 
 export const updateRendererSize = () => {
     renderer.setSize(sizes.width, sizes.height)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, qualityState.pixelRatioCap))
 }

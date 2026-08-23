@@ -10,7 +10,20 @@
     <body>
         <canvas class="webgl"></canvas>
         <button id="tour-toggle">Start tour</button>
-        <div id="audio-controls">
+        <div id="settings-hud">
+            <div id="quality-buttons">
+                <button data-quality="low">Low</button>
+                <button data-quality="medium" class="active">Medium</button>
+                <button data-quality="high">High</button>
+            </div>
+            <input
+                id="volume-slider"
+                type="range"
+                min="0"
+                max="100"
+                value="50"
+                aria-label="Volume"
+            />
             <button id="mute-toggle">Sound: On</button>
         </div>
         <div id="memory-modal" class="hidden">

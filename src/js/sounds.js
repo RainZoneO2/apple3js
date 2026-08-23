@@ -29,6 +29,9 @@ registerAssets(2)
 const mainAudio = new THREE.Audio(audioListener)
 const guitarAudio = new THREE.Audio(audioListener)
 
+// Master volume, driven by the settings slider (CONFIG holds the default)
+let masterVolume = THREE.MathUtils.clamp(CONFIG.audio.volume, 0, 1)
+
 // Mix roles: how much of each arrangement is audible (0..1)
 let mainLevel = 1
 let guitarLevel = 0
@@ -52,7 +55,7 @@ const onError = (key) => (error) => {
 audioLoader.load(MAIN_TRACK, onBuffer('main'), undefined, onError('main'))
 audioLoader.load(GUITAR_TRACK, onBuffer('guitar'), undefined, onError('guitar'))
 
-const volumeFor = (trackLevel) => (muted ? 0 : CONFIG.audio.volume * trackLevel)
+const volumeFor = (trackLevel) => (muted ? 0 : masterVolume * trackLevel)
 
 const rampGain = (audio, target, seconds) => {
     const now = audioListener.context.currentTime
@@ -106,6 +109,11 @@ export const setMemoryDucked = (ducked) => {
     guitarLevel = ducked ? CONFIG.audio.guitarDuckLevel : 0
 
     if (playbackStarted) refreshMix(FADE_SECONDS)
+}
+
+export const setVolume = (value) => {
+    masterVolume = THREE.MathUtils.clamp(value, 0, 1)
+    if (playbackStarted) refreshMix(0.12)
 }
 
 export const toggleMute = () => {
