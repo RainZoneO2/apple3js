@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import './js/loaders.js'
 import './js/scene.js'
 import { sizes } from './js/sizes.js'
-import { updateRendererSize } from './js/renderer.js'
+import { canvas, updateRendererSize } from './js/renderer.js'
 import { camera, controls, updateCameraAspect } from './js/camera.js'
 import { stepWorld, syncMeshes, moveCameraCollider } from './js/physics.js'
 import { updatePhysicsDebugger } from './js/debug-gui.js'
@@ -15,6 +15,8 @@ import { onLoadProgress } from './js/loading.js'
 import { CONFIG } from './js/config.js'
 import { composer, setComposerSize } from './js/postprocessing.js'
 import { updateAtmosphere } from './js/atmosphere.js'
+import { initModal } from './js/modal.js'
+import { initGalleryInteraction } from './js/gallery.js'
 
 // Add audioListener to camera
 attachAudioListener(camera)
@@ -41,6 +43,9 @@ startButton.addEventListener('click', () => {
     requestAudioStart()
     startScreen.classList.add('hidden')
 })
+
+initModal()
+initGalleryInteraction(camera, canvas)
 
 /**
  * Audio controls

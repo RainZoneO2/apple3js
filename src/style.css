@@ -110,3 +110,88 @@ body {
 {
     background: rgba(255, 255, 255, 0.2);
 }
+
+#memory-modal
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#memory-modal.hidden
+{
+    display: none;
+}
+
+.modal-backdrop
+{
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 4, 18, 0.75);
+}
+
+.modal-card
+{
+    position: relative;
+    margin: 0;
+    padding: 16px 16px 12px;
+    background: rgba(20, 9, 29, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 86vw;
+}
+
+#modal-img
+{
+    max-width: 80vw;
+    max-height: 72vh;
+    border-radius: 8px;
+    display: block;
+}
+
+.modal-card figcaption
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    color: #ffffff;
+    font-family: sans-serif;
+}
+
+#modal-title
+{
+    font-size: 16px;
+}
+
+#modal-date
+{
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+#modal-close
+{
+    align-self: flex-end;
+    padding: 5px 14px;
+    font-size: 13px;
+    color: #ffffff;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+#modal-close:hover
+{
+    background: rgba(255, 255, 255, 0.15);
+}

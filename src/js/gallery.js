@@ -6,6 +6,7 @@ import { textureLoader } from './loaders.js'
 import { world, cameraBody } from './physics.js'
 import { registerAssets, markAssetLoaded } from './loading.js'
 import { CONFIG } from './config.js'
+import { openMemory, isModalOpen } from './modal.js'
 
 /**
  * Memories - Images
@@ -19,6 +20,7 @@ const memoryFolderPrefix = CONFIG.gallery.folderPrefix
 const manifestUrl = CONFIG.gallery.manifestUrl
 
 const memoryTextures = []
+const panelSources = []
 
 const loadMemoryTextures = async () => {
     let galleryFiles
@@ -58,6 +60,7 @@ const loadMemoryTextures = async () => {
         // generateMipmaps is off, so the default mip-mapped minFilter must go too
         texture.minFilter = THREE.LinearFilter
         memoryTextures[index] = texture
+        panelSources[index] = `/${galleryFiles[index]}`
     })
 
     if (!memoryTextures.some(Boolean)) {
@@ -216,4 +219,52 @@ export const updateGallery = (camera) => {
     })
 
     updateSpritePosition(camera)
+}
+
+/**
+ * Click-to-open: taps (not drags) on a panel open its fullscreen viewer.
+ */
+const raycaster = new THREE.Raycaster()
+const pointerNDC = new THREE.Vector2()
+let pointerDownInfo = null
+
+const panelAtPointer = (event, camera, canvas) => {
+    pointerNDC.x = (event.clientX / canvas.clientWidth) * 2 - 1
+    pointerNDC.y = -(event.clientY / canvas.clientHeight) * 2 + 1
+
+    raycaster.setFromCamera(pointerNDC, camera)
+    const hits = raycaster.intersectObjects(planeObjects.map((obj) => obj.mesh), false)
+
+    if (hits.length === 0) return -1
+    return planeObjects.findIndex((obj) => obj.mesh === hits[0].object)
+}
+
+export const initGalleryInteraction = (camera, canvas) => {
+    canvas.addEventListener('pointerdown', (event) => {
+        pointerDownInfo = { x: event.clientX, y: event.clientY, time: performance.now() }
+    })
+
+    canvas.addEventListener('pointerup', (event) => {
+        if (!pointerDownInfo || isModalOpen()) {
+            pointerDownInfo = null
+            return
+        }
+
+        const dx = event.clientX - pointerDownInfo.x
+        const dy = event.clientY - pointerDownInfo.y
+        const elapsed = performance.now() - pointerDownInfo.time
+        pointerDownInfo = null
+
+        // Treat small, quick presses as taps so orbit drags never open panels
+        if (dx * dx + dy * dy > 36 || elapsed > 400) return
+
+        const panelIndex = panelAtPointer(event, camera, canvas)
+        if (panelIndex !== -1 && memoryTextures[panelIndex]) {
+            openMemory({ url: panelSources[panelIndex] })
+        }
+    })
+
+    canvas.addEventListener('pointermove', (event) => {
+        canvas.style.cursor = panelAtPointer(event, camera, canvas) !== -1 ? 'pointer' : 'grab'
+    })
 }
