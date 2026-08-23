@@ -24,7 +24,7 @@ export const updateCameraAspect = () => {
  * hops feel springy instead of rigidly locked.
  */
 const rig = { yaw: 0, pitch: 0.34, distance: 8 }
-const MIN_PITCH = -0.05
+const MIN_PITCH = 0.07
 const MAX_PITCH = 1.15
 const MIN_DISTANCE = 3.5
 const MAX_DISTANCE = 14

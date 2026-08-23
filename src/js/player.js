@@ -18,6 +18,11 @@ const settings = { ...CONFIG.player }
 const PLAYER_RADIUS = settings.radius
 
 const playerMesh = createAppleMesh(PLAYER_RADIUS)
+// Nudge the visuals up a hair inside the group (syncMeshes owns group-level
+// transforms) so the ellipsoid never reads as sunk into the floor
+playerMesh.children.forEach((child) => {
+    child.position.y += 0.05
+})
 scene.add(playerMesh)
 
 // Group 2 so the ground-check ray can mask out the player's own collider

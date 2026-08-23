@@ -51,11 +51,13 @@ const floorGeometry = new THREE.PlaneGeometry(100, 100, 128, 128)
 
         let z = position.getZ(i)
 
-        // Gentle low-frequency undulation so the interior is not a perfect plane
+        // Very gentle undulation so the interior is not a perfect plane.
+        // Physics is a flat disc, so this must stay subtle or the apple and
+        // letters read as sunk wherever a bump rises around them.
         z +=
-            Math.sin(x * 0.11 + 1.7) * 0.22 +
-            Math.cos(y * 0.13 + 0.6) * 0.18 +
-            Math.sin((x + y) * 0.07) * 0.12
+            Math.sin(x * 0.11 + 1.7) * 0.08 +
+            Math.cos(y * 0.13 + 0.6) * 0.06 +
+            Math.sin((x + y) * 0.07) * 0.04
 
         // Curl the rim downward past the falloff start for a chunk silhouette
         if (radius > FALLOFF_START) {
@@ -71,7 +73,7 @@ const floorGeometry = new THREE.PlaneGeometry(100, 100, 128, 128)
 
 // Rock underside giving the island visible thickness below the droop
 const underRock = new THREE.Mesh(
-    new THREE.ConeGeometry(FALLOFF_START + 2, 14, 48, 1, true),
+    new THREE.ConeGeometry(FALLOFF_START - 2, 14, 48, 1, true),
     new THREE.MeshStandardMaterial({ color: '#221731', roughness: 1 }),
 )
 underRock.rotation.x = Math.PI
