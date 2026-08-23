@@ -84,11 +84,29 @@ const audioListener = new THREE.AudioListener()
 
 const audioSource = new THREE.Audio( audioListener )
 
+// Browsers block audio until the user interacts with the page, so playback is
+// deferred until the start screen button is clicked.
+let startRequested = false
+
+const tryPlayAudio = () => {
+    if (!startRequested || !audioSource.buffer) return
+    if (audioListener.context.state === 'suspended') audioListener.context.resume()
+    audioSource.play()
+}
+
 audioLoader.load('sounds/the_love_cycle.mp3', function(buffer) {
     audioSource.setBuffer(buffer)
     audioSource.setLoop(true)
     audioSource.setVolume(0.5)
-    audioSource.play()
+    tryPlayAudio()
+})
+
+const startScreen = document.querySelector('#start-screen')
+
+document.querySelector('#start-button').addEventListener('click', () => {
+    startRequested = true
+    tryPlayAudio()
+    startScreen.classList.add('hidden')
 })
 
 /**
